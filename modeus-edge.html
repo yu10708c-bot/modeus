@@ -107,7 +107,25 @@ body {
 .play-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
 .phase-tag { font-size: 16px; color: #E7352A; font-weight: 700; }
 .play-controls { display: flex; gap: 8px; }
-.icon-btn { width: 40px; height: 40px; border: 3px solid #F5F0E8; background: #111; color: #F5F0E8; font-size: 16px; cursor: pointer; }
+.icon-btn, .safe-exit, .play-btn, .end-btn, .age-btn, .menu-start, .menu-rules, .menu-diff, .rules-close {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+.fx-crisp { transition-duration: 80ms; }
+.fx-soft { transition-duration: 170ms; }
+.fx-heavy { transition-duration: 230ms; }
+.fx-crisp.pressed { transform: scale(0.95); border-color: #E7352A; }
+.fx-soft.pressed { transform: scale(0.97); border-color: #E7352A; }
+.fx-heavy.pressed { transform: scale(0.93) translateY(2px); border-color: #E7352A; background: #2a0d0b; }
+button:focus-visible, .menu-diff:focus-visible { outline: 2px solid #E7352A; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .fx-crisp, .fx-soft, .fx-heavy { transition: border-color 80ms linear; }
+  .fx-crisp.pressed, .fx-soft.pressed, .fx-heavy.pressed { transform: none; }
+}
+
 .icon-btn.active { color: #E7352A; border-color: #E7352A; }
 .safe-exit { border: 3px solid #F5F0E8; background: #111; color: #F5F0E8; font-size: 12px; padding: 8px 12px; cursor: pointer; }
 .play-speech-wrap { flex-shrink: 0; margin-bottom: 6px; }
@@ -350,8 +368,8 @@ body.rules-open { overflow: hidden; }
     <div class="age-controls">
       <div class="age-question">你已年滿 18 歲嗎？</div>
       <div class="age-notice">本遊戲僅供年滿 18 歲的成年人使用，包含成人向幻想內容。未滿 18 歲者請勿進入。</div>
-      <button class="age-btn primary" id="age-yes" onclick="confirmAge()">已滿 18 歲・進入遊戲</button>
-      <button class="age-btn secondary" id="age-no" onclick="denyAge()">未滿 18 歲・離開</button>
+      <button class="age-btn primary fx-heavy" id="age-yes" onclick="confirmAge()">已滿 18 歲・進入遊戲</button>
+      <button class="age-btn secondary fx-soft" id="age-no" onclick="denyAge()">未滿 18 歲・離開</button>
     </div>
   </div>
 </div>
@@ -371,15 +389,15 @@ body.rules-open { overflow: hidden; }
       <div>
         <div class="menu-label">難度</div>
         <div class="menu-diffs">
-          <div class="menu-diff" data-diff="easy" onclick="selectMenuDiff(this)">
+          <div class="menu-diff fx-soft" data-diff="easy" onclick="selectMenuDiff(this)">
             <div class="n">輕鬆</div>
             <div class="t">20 分+ · 超慢</div>
           </div>
-          <div class="menu-diff on" data-diff="normal" onclick="selectMenuDiff(this)">
+          <div class="menu-diff on fx-soft" data-diff="normal" onclick="selectMenuDiff(this)">
             <div class="n">標準</div>
             <div class="t">40 分+ · 中等</div>
           </div>
-          <div class="menu-diff" data-diff="hard" onclick="selectMenuDiff(this)">
+          <div class="menu-diff fx-soft" data-diff="hard" onclick="selectMenuDiff(this)">
             <div class="n">高壓</div>
             <div class="t">60 分+ · 較快</div>
           </div>
@@ -393,8 +411,8 @@ body.rules-open { overflow: hidden; }
           <div class="menu-mode-desc">跟隨 BPM · Modeus 下達指令</div>
         </div>
       </div>
-      <button class="menu-rules" type="button" onclick="openRules()">遊戲規則</button>
-      <button class="menu-start" onclick="startGame()">開始挑戰 ▶</button>
+      <button class="menu-rules fx-soft" type="button" onclick="openRules()">遊戲規則</button>
+      <button class="menu-start fx-heavy" onclick="startGame()">開始挑戰 ▶</button>
     </div>
   </div>
 </div>
@@ -411,7 +429,7 @@ body.rules-open { overflow: hidden; }
       <div class="rules-sec"><h3>5. 迎接結局</h3><p>通過終局試煉即可 ESCAPED，失敗則 GAME OVER。</p></div>
       <div class="rules-sec"><h3>難度差異</h3><p>輕鬆、標準、高壓會影響節奏強度及通關所需的燈數。</p></div>
     </div>
-    <button class="rules-close" type="button" onclick="closeRules()">關閉</button>
+    <button class="rules-close fx-soft" type="button" onclick="closeRules()">關閉</button>
   </div>
 </div>
 
@@ -419,10 +437,10 @@ body.rules-open { overflow: hidden; }
   <div class="play-header">
     <div class="phase-tag" id="phase-label">MODEUS調教</div>
     <div class="play-controls">
-      <button class="icon-btn" id="sound-btn" onclick="toggleSound()">🔊</button>
-      <button class="icon-btn" id="beat-btn" onclick="cycleSfx()">🔔</button>
-      <button class="icon-btn active" id="sfx-btn" onclick="toggleMusic()">🎵</button>
-      <button class="safe-exit" onclick="safeExit()">安全退出</button>
+      <button class="icon-btn fx-crisp" id="sound-btn" onclick="toggleSound()">🔊</button>
+      <button class="icon-btn fx-crisp" id="beat-btn" onclick="cycleSfx()">🔔</button>
+      <button class="icon-btn active fx-crisp" id="sfx-btn" onclick="toggleMusic()">🎵</button>
+      <button class="safe-exit fx-soft" onclick="safeExit()">安全退出</button>
     </div>
   </div>
 
@@ -493,8 +511,8 @@ body.rules-open { overflow: hidden; }
   </div>
 
   <div class="play-actions">
-    <button class="play-btn" id="early-btn" onclick="earlyFailure()" style="display:none">投降</button>
-    <button class="play-btn primary" id="cum-btn" onclick="cumCommand()" style="display:none">射了</button>
+    <button class="play-btn fx-heavy" id="early-btn" onclick="earlyFailure()" style="display:none">投降</button>
+    <button class="play-btn primary fx-heavy" id="cum-btn" onclick="cumCommand()" style="display:none">射了</button>
   </div>
 </div>
 
@@ -512,8 +530,8 @@ body.rules-open { overflow: hidden; }
       <div class="end-speech" id="result-desc"></div>
     </div>
     <div class="end-actions">
-      <button class="end-btn primary" onclick="restartGame()">再來一次</button>
-      <button class="end-btn" onclick="returnToMenu()">返回</button>
+      <button class="end-btn primary fx-heavy" onclick="restartGame()">再來一次</button>
+      <button class="end-btn fx-soft" onclick="returnToMenu()">返回</button>
     </div>
   </div>
 </div>
@@ -3399,6 +3417,45 @@ function closeRules(event) {
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeRules();
 });
+function playUiSound(kind) {
+  if (!soundOn) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const spec = kind === 'heavy'
+      ? { f: 140, d: 0.09, v: 0.18 }
+      : kind === 'soft'
+        ? { f: 220, d: 0.06, v: 0.12 }
+        : { f: 320, d: 0.035, v: 0.1 };
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(spec.f, now);
+    gain.gain.setValueAtTime(spec.v, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + spec.d);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(now); osc.stop(now + spec.d);
+  } catch (e) {}
+}
+function bindPressFeedback() {
+  const nodes = document.querySelectorAll('.fx-crisp, .fx-soft, .fx-heavy');
+  nodes.forEach(el => {
+    if (el.dataset.fxBound) return;
+    el.dataset.fxBound = '1';
+    const down = () => el.classList.add('pressed');
+    const up = () => el.classList.remove('pressed');
+    el.addEventListener('pointerdown', down);
+    el.addEventListener('pointerup', up);
+    el.addEventListener('pointercancel', up);
+    el.addEventListener('pointerleave', up);
+    el.addEventListener('click', () => {
+      const kind = el.classList.contains('fx-heavy') ? 'heavy' : el.classList.contains('fx-soft') ? 'soft' : 'crisp';
+      playUiSound(kind);
+    });
+  });
+}
+bindPressFeedback();
 </script>
 </body>
 </html>
