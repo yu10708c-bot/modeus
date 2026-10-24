@@ -103,10 +103,21 @@ body {
 .disclaimer { font-size: 11px; color: #666; text-align: center; margin-top: 14px; line-height: 1.5; }
 
 /* ========== Play ========== */
-#play-screen { flex-direction: column; max-width: 480px; margin: 0 auto; width: 100%; min-height: 100dvh; background: #111; padding: 8px 12px 12px; gap: 8px; }
+#play-screen { flex-direction: column; max-width: 480px; margin: 0 auto; width: 100%; min-height: 100dvh; background: #111; padding: calc(8px + env(safe-area-inset-top, 0px)) 12px calc(12px + env(safe-area-inset-bottom, 0px)); gap: 8px; overflow-x: hidden; }
 .play-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-.phase-tag { font-size: 16px; color: #E7352A; font-weight: 700; }
-.play-controls { display: flex; gap: 8px; }
+.phase-tag { font-size: 16px; color: #E7352A; font-weight: 900; letter-spacing: 1px; }
+.play-stage { display: flex; gap: 8px; align-items: stretch; flex-shrink: 0; }
+.play-speech-wrap { flex: 1 1 42%; margin: 0; display: flex; flex-direction: column; justify-content: flex-end; }
+.play-speech { font-size: clamp(14px, 3.6vw, 16px); line-height: 1.45; }
+.play-character { flex: 1 1 58%; min-height: 28dvh; max-height: 38dvh; position: relative; background: #0d0d0d; border: 3px solid #F5F0E8; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.play-status { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; flex-shrink: 0; }
+.status-cell { background: #111; border: 2px solid #E7352A; padding: 6px 8px; min-width: 0; }
+.status-label { color: #858585; font-size: 11px; font-weight: 700; }
+.status-value { color: #F5F0E8; font-size: 16px; font-weight: 900; }
+.play-command { position: relative; border: 3px solid #F5F0E8; padding: 10px 12px 10px 16px; background: #111; }
+.cmd-text { font-size: clamp(16px, 4.2vw, 20px); }
+.cmd-sub { font-size: clamp(13px, 3.4vw, 15px); color: #ddd; line-height: 1.45; }
+.play-actions { position: sticky; bottom: 0; background: #111; padding-top: 4px; }
 button, .menu-diff, .modeus-button {
   --press-scale: 0.95;
   --press-speed: 90ms;
@@ -445,7 +456,7 @@ body.rules-open { overflow: hidden; }
 
 <div id="play-screen" class="screen">
   <div class="play-header">
-    <div class="phase-tag" id="phase-label">MODEUS調教</div>
+    <div class="phase-tag" id="phase-label">MODEUS 調教</div>
     <div class="play-controls">
       <button class="icon-btn modeus-button crisp fx-crisp" id="sound-btn" onclick="toggleSound()">🔊</button>
       <button class="icon-btn modeus-button crisp fx-crisp" id="beat-btn" onclick="cycleSfx()">🔔</button>
@@ -454,13 +465,33 @@ body.rules-open { overflow: hidden; }
     </div>
   </div>
 
-  <div class="play-speech-wrap">
-    <div class="speech-name">MODEUS</div>
-    <div class="play-speech" id="dialogue">「準備好了嗎？乖乖聽我的話。」</div>
+  <div class="play-stage">
+    <div class="play-speech-wrap">
+      <div class="speech-name">MODEUS</div>
+      <div class="play-speech" id="dialogue">「準備好了嗎？乖乖聽我的話。」</div>
+    </div>
+    <div class="play-character">
+      <img class="play-portrait" id="portrait" src="https://raw.githubusercontent.com/yu10708c-bot/modeus/main/modeus-smile.jpg" alt="Modeus">
+    </div>
   </div>
 
-  <div class="play-character">
-    <img class="play-portrait" id="portrait" src="https://raw.githubusercontent.com/yu10708c-bot/modeus/main/modeus-smile.jpg" alt="Modeus">
+  <div class="play-status" id="play-status">
+    <div class="status-cell">
+      <div class="status-label">階段</div>
+      <div class="status-value" id="phase-status">指令階段</div>
+    </div>
+    <div class="status-cell">
+      <div class="status-label">BPM</div>
+      <div class="status-value" id="status-bpm">90</div>
+    </div>
+    <div class="status-cell">
+      <div class="status-label">淫蕩度</div>
+      <div class="status-value" id="status-lust">0%</div>
+    </div>
+    <div class="status-cell">
+      <div class="status-label">墮落試煉</div>
+      <div class="status-value" id="status-trial">0 / 3</div>
+    </div>
   </div>
 
   <div class="play-rhythm">
@@ -2964,7 +2995,10 @@ function startMetronome() {
   }, interval);
 }
 function updateBPM(restart = true) {
-  document.getElementById('bpm-display').textContent = Math.round(bpm);
+  const value = Math.round(bpm);
+  document.getElementById('bpm-display').textContent = value;
+  const status = document.getElementById('status-bpm');
+  if (status) status.textContent = value;
   noteBpmForDialogue(bpm);
   if (isPlaying && restart) startMetronome();
 }
@@ -2972,6 +3006,8 @@ function updatePermission() {
   const p = Math.round(permission);
   document.getElementById('perm-percent').textContent = p + '%';
   document.getElementById('perm-fill').style.width = p + '%';
+  const status = document.getElementById('status-lust');
+  if (status) status.textContent = p + '%';
 }
 function updateLights() {
   const container = document.getElementById('trial-lights');
@@ -2983,14 +3019,22 @@ function updateLights() {
     light.className = 'trial-light' + (i < currentRound ? ' on' : '');
     container.appendChild(light);
   }
-  if (countEl) countEl.textContent = currentRound + ' / ' + maxRounds;
+  const text = currentRound + ' / ' + maxRounds;
+  if (countEl) countEl.textContent = text;
+  const status = document.getElementById('status-trial');
+  if (status) status.textContent = text;
+}
+function setPhaseStatus(text) {
+  const el = document.getElementById('phase-status');
+  if (el) el.textContent = text;
 }
 function finishPunishment() {
   currentPhase = 'normal';
   permission = 0;
   roundDone = 0;
   updatePermission();
-  document.getElementById('phase-label').textContent = 'MODEUS調教';
+  document.getElementById('phase-label').textContent = 'MODEUS 調教';
+  setPhaseStatus('指令階段');
   document.getElementById('dialogue').textContent = '「懲罰結束。繼續。」';
   document.getElementById('cum-btn').style.display = 'none';
 
@@ -3070,7 +3114,8 @@ function startGame() {
   updatePortrait('smile');
   updateLights();
   const phase = document.getElementById('phase-label');
-  if (phase) phase.textContent = 'MODEUS調教';
+  if (phase) phase.textContent = 'MODEUS 調教';
+  setPhaseStatus('指令階段');
   const cumBtn = document.getElementById('cum-btn');
   if (cumBtn) cumBtn.style.display = 'none';
   setEarlyVisible(true);
@@ -3135,6 +3180,7 @@ function startHighspeed() {
   setPlayProgress(true);
   setFinalProgress(false);
   document.getElementById('phase-label').textContent = 'FALLEN TRIAL · 墮落試煉';
+  setPhaseStatus('墮落試煉');
   document.getElementById('command-text').textContent = '全力快速抽插';
   document.getElementById('command-sub').textContent = 'BPM 正在上升，只能用後面承受';
   updatePortrait('countdown');
@@ -3263,7 +3309,8 @@ function finishPunishment() {
   setFinalRules(false);
   setPlayProgress(true);
   setFinalProgress(false);
-  document.getElementById('phase-label').textContent = 'MODEUS調教';
+  document.getElementById('phase-label').textContent = 'MODEUS 調教';
+  setPhaseStatus('指令階段');
   if (penaltyReason === 'early_failure') showEventDialogue('early_failure', 2500);
   else showEventDialogue('penalty', 2500);
   document.getElementById('cum-btn').style.display = 'none';
@@ -3286,6 +3333,7 @@ function startFinal() {
   const finalFill = document.getElementById('final-fill');
   if (finalFill) finalFill.style.width = '100%';
   document.getElementById('phase-label').textContent = '終局試煉 · 5 分鐘';
+  setPhaseStatus('終局試煉');
   document.getElementById('command-text').textContent = '同時用手自慰 + 假肉棒抽插';
   document.getElementById('command-sub').textContent = 'BPM 60→240，撐過就算逃脫';
   updatePortrait('final');
