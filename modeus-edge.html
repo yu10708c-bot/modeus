@@ -2742,16 +2742,20 @@ function toggleSound() {
   btn.textContent = soundOn ? '🔊' : '🔇';
   btn.classList.toggle('active', soundOn);
 }
+// Modeus psychology: confident, playful, controlling.
+// Surrender = amused mockery. Trial success = impressed.
+// Trial failure = playful anticipation. Final failure = triumph.
+// Final endurance = frustrated, still resisting.
 const ASSETS = {
   default: { file: 'modeus.png', fallback: 'modeus-smile.jpg', type: 'expression' },
   normal: { file: 'modeus-smirk.png', fallback: 'modeus-smile.jpg', type: 'expression' },
   smile: { file: 'modeus-smirk.png', fallback: 'modeus-smile.jpg', type: 'expression' },
   desk: { file: 'modeus-desk.jpg', fallback: 'modeus-smile.jpg', type: 'expression' },
-  excited: { file: 'modeus-excited.jpg', fallback: 'modeus-triumph.png', type: 'expression' },
-  bored: { file: 'modeus-bored.png', fallback: 'modeus-bored.jpg', type: 'expression' },
-  angry: { file: 'modeus-angry.png', fallback: 'modeus-angry.jpg', type: 'expression' },
-  laugh: { file: 'modeus-laugh.jpg', fallback: 'modeus-triumph.png', type: 'expression' },
-  lounge: { file: 'modeus-lounge.jpg', fallback: 'modeus-smile.jpg', type: 'expression' },
+  excited: { file: 'modeus-flirty.png', fallback: 'modeus-excited.jpg', type: 'expression' },
+  bored: { file: 'modeus-impatient.png', fallback: 'modeus-bored.jpg', type: 'expression' },
+  angry: { file: 'modeus-frustrated.png', fallback: 'modeus-angry.jpg', type: 'expression' },
+  laugh: { file: 'modeus-tease.png', fallback: 'modeus-laugh.jpg', type: 'expression' },
+  lounge: { file: 'modeus-dominant.png', fallback: 'modeus-lounge.jpg', type: 'expression' },
   command: { file: 'modeus-command.png', fallback: 'modeus-angry.png', type: 'expression' },
   danger: { file: 'modeus-danger.png', fallback: 'modeus-angry.png', type: 'expression' },
   defeated: { file: 'modeus-defeated.png', fallback: 'modeus-angry.jpg', type: 'expression' },
@@ -3235,7 +3239,7 @@ function startPunishment() {
   if (penaltyReason !== 'early_failure') showEventDialogue('penalty', 4000);
   document.getElementById('command-text').textContent = item.desc;
   document.getElementById('command-sub').textContent = '塞進去後繼續用假肉棒抽插。';
-  updatePortrait(penaltyReason === 'early_failure' ? 'judgment' : 'disappointed');
+  updatePortrait(penaltyReason === 'early_failure' ? 'tease' : 'danger');
   setSurrenderNotice(penaltyReason === 'early_failure');
   setFallenNotice(penaltyReason === 'fallen_trial');
   setFinalRules(false);
@@ -3353,21 +3357,21 @@ function endGame(type) {
       title: 'VICTORY',
       sub: '挑戰成功',
       status: 'CHALLENGE COMPLETE',
-      img: 'modeus-triumph.png',
+      img: 'modeus-impressed.png',
       text: '「ふふっ……やるじゃない。今回はあなたの勝ちね。」<small>「呵呵……挺厲害的嘛。這次算你贏了。」</small>'
     },
     escaped: {
       title: 'ESCAPED',
       sub: '逃出生天',
       status: 'FINAL TRIAL SURVIVED',
-      img: 'modeus-smirk.png',
+      img: 'modeus-frustrated.png',
       text: '「……竟能撐過五分鐘。這次讓你逃掉了。」<small>「……竟然撐過五分鐘。這次算你逃掉了。」</small>'
     },
     failure: {
       title: 'GAME OVER',
       sub: '終局失敗',
       status: 'FINAL TRIAL FAILED',
-      img: 'modeus-defeated.png',
+      img: 'modeus-triumph.png',
       text: '「ふふっ……残念だったわね。また明日、挑戦してみて。」<small>「呵呵……真可惜呢。明天再來挑戰吧。」</small>'
     }
   };
