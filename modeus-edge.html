@@ -106,14 +106,13 @@ body {
 #play-screen { flex-direction: column; max-width: 480px; margin: 0 auto; width: 100%; min-height: 100dvh; background: #111; padding: calc(8px + env(safe-area-inset-top, 0px)) 12px calc(12px + env(safe-area-inset-bottom, 0px)); gap: 8px; overflow-x: hidden; }
 .play-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
 .phase-tag { font-size: 16px; color: #E7352A; font-weight: 900; letter-spacing: 1px; }
-.play-stage { display: flex; gap: 8px; align-items: stretch; flex-shrink: 0; }
-.play-speech-wrap { flex: 1 1 42%; margin: 0; display: flex; flex-direction: column; justify-content: flex-end; }
-.play-speech { font-size: clamp(14px, 3.6vw, 16px); line-height: 1.45; }
-.play-character { flex: 1 1 58%; min-height: 28dvh; max-height: 38dvh; position: relative; background: #0d0d0d; border: 3px solid #F5F0E8; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.play-status { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; flex-shrink: 0; }
-.status-cell { background: #111; border: 2px solid #E7352A; padding: 6px 8px; min-width: 0; }
-.status-label { color: #858585; font-size: 11px; font-weight: 700; }
-.status-value { color: #F5F0E8; font-size: 16px; font-weight: 900; }
+.play-stage { display: block; flex-shrink: 0; }
+.play-character { width: 100%; min-height: 34dvh; max-height: 42dvh; background: #0d0d0d; border: 3px solid #F5F0E8; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.play-speech-wrap { width: 100%; margin: 6px 0 0; }
+.play-speech { font-size: clamp(15px, 4vw, 18px); line-height: 1.45; }
+.play-info { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-shrink: 0; }
+.play-info .play-rhythm { flex: 1; }
+.play-info .trial-lights-wrap { flex: 0 0 auto; margin: 0; }
 .play-command { position: relative; border: 3px solid #F5F0E8; padding: 10px 12px 10px 16px; background: #111; }
 .cmd-text { font-size: clamp(16px, 4.2vw, 20px); }
 .cmd-sub { font-size: clamp(13px, 3.4vw, 15px); color: #ddd; line-height: 1.45; }
@@ -465,47 +464,27 @@ body.rules-open { overflow: hidden; }
     </div>
   </div>
 
-  <div class="play-stage">
-    <div class="play-speech-wrap">
-      <div class="speech-name">MODEUS</div>
-      <div class="play-speech" id="dialogue">「準備好了嗎？乖乖聽我的話。」</div>
-    </div>
-    <div class="play-character">
-      <img class="play-portrait" id="portrait" src="https://raw.githubusercontent.com/yu10708c-bot/modeus/main/modeus-smile.jpg" alt="Modeus">
-    </div>
+  <div class="play-character">
+    <img class="play-portrait" id="portrait" src="https://raw.githubusercontent.com/yu10708c-bot/modeus/main/modeus-smile.jpg" alt="Modeus">
+  </div>
+  <div class="play-speech-wrap">
+    <div class="speech-name">MODEUS</div>
+    <div class="play-speech" id="dialogue">「準備好了嗎？乖乖聽我的話。」</div>
   </div>
 
-  <div class="play-status" id="play-status">
-    <div class="status-cell">
-      <div class="status-label">階段</div>
-      <div class="status-value" id="phase-status">指令階段</div>
+  <div class="play-info">
+    <div class="play-rhythm">
+      <div class="bpm-row">
+        <div class="wave" id="wave-l"><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="bpm-display beat-pulse" id="bpm-display">90</div>
+        <div class="wave" id="wave-r"><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="bpm-label">BPM</div>
     </div>
-    <div class="status-cell">
-      <div class="status-label">BPM</div>
-      <div class="status-value" id="status-bpm">90</div>
+    <div class="trial-lights-wrap">
+      <div class="trial-title">墮落試煉 <span id="trial-count">0 / 3</span></div>
+      <div class="trial-lights" id="trial-lights"></div>
     </div>
-    <div class="status-cell">
-      <div class="status-label">淫蕩度</div>
-      <div class="status-value" id="status-lust">0%</div>
-    </div>
-    <div class="status-cell">
-      <div class="status-label">墮落試煉</div>
-      <div class="status-value" id="status-trial">0 / 3</div>
-    </div>
-  </div>
-
-  <div class="play-rhythm">
-    <div class="bpm-row">
-      <div class="wave" id="wave-l"><span></span><span></span><span></span><span></span><span></span></div>
-      <div class="bpm-display beat-pulse" id="bpm-display">90</div>
-      <div class="wave" id="wave-r"><span></span><span></span><span></span><span></span><span></span></div>
-    </div>
-    <div class="bpm-label">BPM</div>
-  </div>
-
-  <div class="trial-lights-wrap">
-    <div class="trial-title">墮落試煉 <span id="trial-count">0 / 3</span></div>
-    <div class="trial-lights" id="trial-lights"></div>
   </div>
   <div class="surrender-notice" id="surrender-notice">
     <span>「遊戲一旦開始，就沒有投降這個選項。」</span>
