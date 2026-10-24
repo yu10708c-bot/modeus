@@ -107,24 +107,40 @@ body {
 .play-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
 .phase-tag { font-size: 16px; color: #E7352A; font-weight: 700; }
 .play-controls { display: flex; gap: 8px; }
-.icon-btn, .safe-exit, .play-btn, .end-btn, .age-btn, .menu-start, .menu-rules, .menu-diff, .rules-close {
+.modeus-button {
+  --press-scale: 0.95;
+  --press-speed: 90ms;
+  transform: translateY(0) scale(1);
+  box-shadow: 0 6px 0 #330d18, 0 9px 18px #0008;
+  filter: drop-shadow(0 6px 0 #330d18);
+  transition: transform var(--press-speed) ease, box-shadow var(--press-speed) ease, filter var(--press-speed) ease;
   touch-action: manipulation;
-  -webkit-user-select: none;
   user-select: none;
+  -webkit-user-select: none;
   -webkit-touch-callout: none;
-  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
 }
-.fx-crisp { transition-duration: 80ms; }
-.fx-soft { transition-duration: 170ms; }
-.fx-heavy { transition-duration: 230ms; }
-.fx-crisp.pressed { transform: scale(0.95); border-color: #E7352A; }
-.fx-soft.pressed { transform: scale(0.97); border-color: #E7352A; }
-.fx-heavy.pressed { transform: scale(0.93) translateY(2px); border-color: #E7352A; background: #2a0d0b; }
+.modeus-button:active,
+.modeus-button.is-pressed,
+.modeus-button.pressed {
+  transform: translateY(5px) scale(var(--press-scale));
+  box-shadow: 0 1px 0 #330d18, 0 2px 6px #0008;
+  filter: brightness(1.2) drop-shadow(0 1px 0 #330d18);
+}
+.modeus-button.crisp, .modeus-button.fx-crisp { --press-scale: 0.95; --press-speed: 90ms; }
+.modeus-button.soft, .modeus-button.fx-soft { --press-scale: 0.97; --press-speed: 180ms; }
+.modeus-button.heavy, .modeus-button.fx-heavy { --press-scale: 0.92; --press-speed: 260ms; }
 button:focus-visible, .menu-diff:focus-visible { outline: 2px solid #E7352A; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
-  .fx-crisp, .fx-soft, .fx-heavy { transition: border-color 80ms linear; }
-  .fx-crisp.pressed, .fx-soft.pressed, .fx-heavy.pressed { transform: none; }
+  .modeus-button, .modeus-button:active, .modeus-button.is-pressed, .modeus-button.pressed {
+    transition: filter 80ms linear;
+    transform: none;
+  }
 }
+.press-preview { margin: 10px 0 14px; padding: 10px; border: 2px solid #E7352A; background: #0d0d0d; }
+.press-preview-title { color: #E7352A; font-weight: 900; font-size: 13px; margin-bottom: 8px; text-align: center; }
+.press-preview-row { display: flex; gap: 8px; }
+.press-preview .modeus-button { flex: 1; min-height: 48px; background: #E7352A; color: #111; border: none; font-weight: 900; cursor: pointer; }
+
 
 .icon-btn.active { color: #E7352A; border-color: #E7352A; }
 .safe-exit { border: 3px solid #F5F0E8; background: #111; color: #F5F0E8; font-size: 12px; padding: 8px 12px; cursor: pointer; }
@@ -190,7 +206,7 @@ button:focus-visible, .menu-diff:focus-visible { outline: 2px solid #E7352A; out
 .play-actions { display: flex; gap: 8px; flex-shrink: 0; margin-top: 4px; flex-wrap: wrap; }
 .play-btn { flex: 1 1 40%; min-height: 52px; border: 3px solid #F5F0E8; background: #111; color: #F5F0E8; font-size: 15px; font-weight: 700; padding: 12px; cursor: pointer; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); transition: transform 0.08s; }
 #early-btn { flex: 1 1 100%; }
-.play-btn:active { transform: scale(0.97); }
+.play-btn:active { transform: none; }
 .play-btn.primary { background: #E7352A; border-color: #E7352A; color: #111; }
 .beat-pulse { transition: transform 0.08s; }
 .beat-pulse.beat { transform: scale(1.15); }
@@ -299,7 +315,7 @@ button:focus-visible, .menu-diff:focus-visible { outline: 2px solid #E7352A; out
   clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
 }
 .end-btn.primary { background: #E7352A; border-color: #E7352A; color: #111; }
-.end-btn:active { transform: scale(0.98); }
+.end-btn:active { transform: none; }
 @keyframes endFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
   .end-title, .end-sub, .end-character, .end-speech-wrap { animation: none; }
@@ -368,8 +384,8 @@ body.rules-open { overflow: hidden; }
     <div class="age-controls">
       <div class="age-question">你已年滿 18 歲嗎？</div>
       <div class="age-notice">本遊戲僅供年滿 18 歲的成年人使用，包含成人向幻想內容。未滿 18 歲者請勿進入。</div>
-      <button class="age-btn primary fx-heavy" id="age-yes" onclick="confirmAge()">已滿 18 歲・進入遊戲</button>
-      <button class="age-btn secondary fx-soft" id="age-no" onclick="denyAge()">未滿 18 歲・離開</button>
+      <button class="age-btn primary modeus-button heavy fx-heavy" id="age-yes" onclick="confirmAge()">已滿 18 歲・進入遊戲</button>
+      <button class="age-btn secondary modeus-button soft fx-soft" id="age-no" onclick="denyAge()">未滿 18 歲・離開</button>
     </div>
   </div>
 </div>
@@ -389,15 +405,15 @@ body.rules-open { overflow: hidden; }
       <div>
         <div class="menu-label">難度</div>
         <div class="menu-diffs">
-          <div class="menu-diff fx-soft" data-diff="easy" onclick="selectMenuDiff(this)">
+          <div class="menu-diff modeus-button soft fx-soft" data-diff="easy" onclick="selectMenuDiff(this)">
             <div class="n">輕鬆</div>
             <div class="t">20 分+ · 超慢</div>
           </div>
-          <div class="menu-diff on fx-soft" data-diff="normal" onclick="selectMenuDiff(this)">
+          <div class="menu-diff on modeus-button soft fx-soft" data-diff="normal" onclick="selectMenuDiff(this)">
             <div class="n">標準</div>
             <div class="t">40 分+ · 中等</div>
           </div>
-          <div class="menu-diff fx-soft" data-diff="hard" onclick="selectMenuDiff(this)">
+          <div class="menu-diff modeus-button soft fx-soft" data-diff="hard" onclick="selectMenuDiff(this)">
             <div class="n">高壓</div>
             <div class="t">60 分+ · 較快</div>
           </div>
@@ -411,8 +427,17 @@ body.rules-open { overflow: hidden; }
           <div class="menu-mode-desc">跟隨 BPM · Modeus 下達指令</div>
         </div>
       </div>
-      <button class="menu-rules fx-soft" type="button" onclick="openRules()">遊戲規則</button>
-      <button class="menu-start fx-heavy" onclick="startGame()">開始挑戰 ▶</button>
+      <button class="menu-rules modeus-button soft fx-soft" type="button" onclick="openRules()">遊戲規則</button>
+      
+      <div class="press-preview" id="press-preview">
+        <div class="press-preview-title">按鈕手感對照</div>
+        <div class="press-preview-row">
+          <button type="button" class="modeus-button crisp">Crisp</button>
+          <button type="button" class="modeus-button soft">Soft</button>
+          <button type="button" class="modeus-button heavy">Heavy</button>
+        </div>
+      </div>
+      <button class="menu-start modeus-button heavy fx-heavy" onclick="startGame()">開始挑戰 ▶</button>
     </div>
   </div>
 </div>
@@ -429,7 +454,7 @@ body.rules-open { overflow: hidden; }
       <div class="rules-sec"><h3>5. 迎接結局</h3><p>通過終局試煉即可 ESCAPED，失敗則 GAME OVER。</p></div>
       <div class="rules-sec"><h3>難度差異</h3><p>輕鬆、標準、高壓會影響節奏強度及通關所需的燈數。</p></div>
     </div>
-    <button class="rules-close fx-soft" type="button" onclick="closeRules()">關閉</button>
+    <button class="rules-close modeus-button soft fx-soft" type="button" onclick="closeRules()">關閉</button>
   </div>
 </div>
 
@@ -437,10 +462,10 @@ body.rules-open { overflow: hidden; }
   <div class="play-header">
     <div class="phase-tag" id="phase-label">MODEUS調教</div>
     <div class="play-controls">
-      <button class="icon-btn fx-crisp" id="sound-btn" onclick="toggleSound()">🔊</button>
-      <button class="icon-btn fx-crisp" id="beat-btn" onclick="cycleSfx()">🔔</button>
-      <button class="icon-btn active fx-crisp" id="sfx-btn" onclick="toggleMusic()">🎵</button>
-      <button class="safe-exit fx-soft" onclick="safeExit()">安全退出</button>
+      <button class="icon-btn modeus-button crisp fx-crisp" id="sound-btn" onclick="toggleSound()">🔊</button>
+      <button class="icon-btn modeus-button crisp fx-crisp" id="beat-btn" onclick="cycleSfx()">🔔</button>
+      <button class="icon-btn active modeus-button crisp fx-crisp" id="sfx-btn" onclick="toggleMusic()">🎵</button>
+      <button class="safe-exit modeus-button soft fx-soft" onclick="safeExit()">安全退出</button>
     </div>
   </div>
 
@@ -511,8 +536,8 @@ body.rules-open { overflow: hidden; }
   </div>
 
   <div class="play-actions">
-    <button class="play-btn fx-heavy" id="early-btn" onclick="earlyFailure()" style="display:none">投降</button>
-    <button class="play-btn primary fx-heavy" id="cum-btn" onclick="cumCommand()" style="display:none">射了</button>
+    <button class="play-btn modeus-button heavy fx-heavy" id="early-btn" onclick="earlyFailure()" style="display:none">投降</button>
+    <button class="play-btn primary modeus-button heavy fx-heavy" id="cum-btn" onclick="cumCommand()" style="display:none">射了</button>
   </div>
 </div>
 
@@ -530,8 +555,8 @@ body.rules-open { overflow: hidden; }
       <div class="end-speech" id="result-desc"></div>
     </div>
     <div class="end-actions">
-      <button class="end-btn primary fx-heavy" onclick="restartGame()">再來一次</button>
-      <button class="end-btn fx-soft" onclick="returnToMenu()">返回</button>
+      <button class="end-btn primary modeus-button heavy fx-heavy" onclick="restartGame()">再來一次</button>
+      <button class="end-btn modeus-button soft fx-soft" onclick="returnToMenu()">返回</button>
     </div>
   </div>
 </div>
@@ -3439,18 +3464,18 @@ function playUiSound(kind) {
   } catch (e) {}
 }
 function bindPressFeedback() {
-  const nodes = document.querySelectorAll('.fx-crisp, .fx-soft, .fx-heavy');
+  const nodes = document.querySelectorAll('.modeus-button');
   nodes.forEach(el => {
     if (el.dataset.fxBound) return;
     el.dataset.fxBound = '1';
-    const down = () => el.classList.add('pressed');
-    const up = () => el.classList.remove('pressed');
+    const down = () => { el.classList.add('is-pressed'); el.classList.add('pressed'); };
+    const up = () => { el.classList.remove('is-pressed'); el.classList.remove('pressed'); };
     el.addEventListener('pointerdown', down);
     el.addEventListener('pointerup', up);
     el.addEventListener('pointercancel', up);
     el.addEventListener('pointerleave', up);
     el.addEventListener('click', () => {
-      const kind = el.classList.contains('fx-heavy') ? 'heavy' : el.classList.contains('fx-soft') ? 'soft' : 'crisp';
+      const kind = el.classList.contains('heavy') ? 'heavy' : el.classList.contains('soft') ? 'soft' : 'crisp';
       playUiSound(kind);
     });
   });
