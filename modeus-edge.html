@@ -107,39 +107,34 @@ body {
 .play-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
 .phase-tag { font-size: 16px; color: #E7352A; font-weight: 700; }
 .play-controls { display: flex; gap: 8px; }
-.modeus-button {
+button, .menu-diff, .modeus-button {
   --press-scale: 0.95;
   --press-speed: 90ms;
   transform: translateY(0) scale(1);
   box-shadow: 0 6px 0 #330d18, 0 9px 18px #0008;
   filter: drop-shadow(0 6px 0 #330d18);
-  transition: transform var(--press-speed) ease, box-shadow var(--press-speed) ease, filter var(--press-speed) ease;
+  transition: transform var(--press-speed) ease, box-shadow var(--press-speed) ease, filter var(--press-speed) ease !important;
   touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
-.modeus-button:active,
-.modeus-button.is-pressed,
-.modeus-button.pressed {
-  transform: translateY(5px) scale(var(--press-scale));
-  box-shadow: 0 1px 0 #330d18, 0 2px 6px #0008;
-  filter: brightness(1.2) drop-shadow(0 1px 0 #330d18);
+button:active, button.is-pressed, button.pressed,
+.menu-diff:active, .menu-diff.is-pressed, .menu-diff.pressed,
+.modeus-button:active, .modeus-button.is-pressed, .modeus-button.pressed {
+  transform: translateY(5px) scale(var(--press-scale)) !important;
+  box-shadow: 0 1px 0 #330d18, 0 2px 6px #0008 !important;
+  filter: brightness(1.2) drop-shadow(0 1px 0 #330d18) !important;
 }
-.modeus-button.crisp, .modeus-button.fx-crisp { --press-scale: 0.95; --press-speed: 90ms; }
-.modeus-button.soft, .modeus-button.fx-soft { --press-scale: 0.97; --press-speed: 180ms; }
-.modeus-button.heavy, .modeus-button.fx-heavy { --press-scale: 0.92; --press-speed: 260ms; }
 button:focus-visible, .menu-diff:focus-visible { outline: 2px solid #E7352A; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
-  .modeus-button, .modeus-button:active, .modeus-button.is-pressed, .modeus-button.pressed {
-    transition: filter 80ms linear;
-    transform: none;
+  button, .menu-diff, .modeus-button,
+  button:active, button.is-pressed, button.pressed,
+  .menu-diff:active, .menu-diff.is-pressed, .menu-diff.pressed {
+    transition: filter 80ms linear !important;
+    transform: none !important;
   }
 }
-.press-preview { margin: 10px 0 14px; padding: 10px; border: 2px solid #E7352A; background: #0d0d0d; }
-.press-preview-title { color: #E7352A; font-weight: 900; font-size: 13px; margin-bottom: 8px; text-align: center; }
-.press-preview-row { display: flex; gap: 8px; }
-.press-preview .modeus-button { flex: 1; min-height: 48px; background: #E7352A; color: #111; border: none; font-weight: 900; cursor: pointer; }
 
 
 .icon-btn.active { color: #E7352A; border-color: #E7352A; }
@@ -429,14 +424,6 @@ body.rules-open { overflow: hidden; }
       </div>
       <button class="menu-rules modeus-button soft fx-soft" type="button" onclick="openRules()">遊戲規則</button>
       
-      <div class="press-preview" id="press-preview">
-        <div class="press-preview-title">按鈕手感對照</div>
-        <div class="press-preview-row">
-          <button type="button" class="modeus-button crisp">Crisp</button>
-          <button type="button" class="modeus-button soft">Soft</button>
-          <button type="button" class="modeus-button heavy">Heavy</button>
-        </div>
-      </div>
       <button class="menu-start modeus-button heavy fx-heavy" onclick="startGame()">開始挑戰 ▶</button>
     </div>
   </div>
@@ -3464,7 +3451,7 @@ function playUiSound(kind) {
   } catch (e) {}
 }
 function bindPressFeedback() {
-  const nodes = document.querySelectorAll('.modeus-button');
+  const nodes = document.querySelectorAll('button, .menu-diff');
   nodes.forEach(el => {
     if (el.dataset.fxBound) return;
     el.dataset.fxBound = '1';
@@ -3474,10 +3461,7 @@ function bindPressFeedback() {
     el.addEventListener('pointerup', up);
     el.addEventListener('pointercancel', up);
     el.addEventListener('pointerleave', up);
-    el.addEventListener('click', () => {
-      const kind = el.classList.contains('heavy') ? 'heavy' : el.classList.contains('soft') ? 'soft' : 'crisp';
-      playUiSound(kind);
-    });
+    el.addEventListener('click', () => playUiSound('crisp'));
   });
 }
 bindPressFeedback();
