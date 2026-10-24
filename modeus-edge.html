@@ -1,0 +1,3404 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Modeus · 前高邊緣挑戰</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700;900&family=Press+Start+2P&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: 'Noto Sans TC', system-ui, sans-serif;
+  min-height: 100dvh;
+  user-select: none;
+}
+
+.screen { display: none; min-height: 100dvh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ========== Age ========== */
+#age-screen {
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: #000;
+}
+.age-card {
+  border: 3px solid #fff;
+  padding: 32px 24px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+}
+.age-card h1 { font-size: 24px; font-weight: 900; margin-bottom: 16px; }
+.age-card p { color: #aaa; font-size: 14px; line-height: 1.6; margin-bottom: 6px; }
+.age-btns { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+
+.btn {
+  border: 3px solid #fff;
+  background: #000;
+  color: #fff;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 14px 20px;
+  cursor: pointer;
+}
+.btn:active { background: #111; }
+.btn-primary { background: #e6392b; border-color: #e6392b; color: #fff; }
+.btn-primary:active { background: #ff4a3a; }
+
+/* ========== Setup ========== */
+#setup-screen {
+  padding: 16px;
+  max-width: 420px;
+  margin: 0 auto;
+  width: 100%;
+  background: #000;
+}
+.logo {
+  border: 3px solid #fff;
+  padding: 20px 16px 16px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.logo-title { font-size: 28px; font-weight: 900; letter-spacing: 2px; }
+.logo-sub { font-size: 13px; color: #e6392b; margin-top: 4px; letter-spacing: 1px; }
+.modeus-preview {
+  width: 100%;
+  max-width: 220px;
+  height: 180px;
+  object-fit: cover;
+  margin: 16px auto 8px;
+  display: block;
+  border: 3px solid #fff;
+  background: #111;
+}
+
+.section { margin-bottom: 18px; }
+.section-title { font-size: 13px; color: #aaa; margin-bottom: 8px; letter-spacing: 1px; }
+.option-group { display: flex; gap: 8px; }
+.option {
+  flex: 1;
+  border: 3px solid #fff;
+  background: #000;
+  padding: 14px 6px;
+  text-align: center;
+  cursor: pointer;
+}
+.option.selected {
+  background: #e6392b;
+  border-color: #e6392b;
+}
+.option-name { font-weight: 700; font-size: 15px; }
+.option-desc { font-size: 11px; color: #ccc; margin-top: 4px; line-height: 1.3; }
+.option.selected .option-name,
+.option.selected .option-desc { color: #fff; }
+
+.start-area { margin-top: 8px; }
+.disclaimer { font-size: 11px; color: #666; text-align: center; margin-top: 14px; line-height: 1.5; }
+
+/* ========== Play ========== */
+#play-screen { flex-direction: column; max-width: 480px; margin: 0 auto; width: 100%; min-height: 100dvh; background: #111; padding: 8px 12px 12px; gap: 8px; }
+.play-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.phase-tag { font-size: 16px; color: #E7352A; font-weight: 700; }
+.play-controls { display: flex; gap: 8px; }
+.icon-btn { width: 40px; height: 40px; border: 3px solid #F5F0E8; background: #111; color: #F5F0E8; font-size: 16px; cursor: pointer; }
+.icon-btn.active { color: #E7352A; border-color: #E7352A; }
+.safe-exit { border: 3px solid #F5F0E8; background: #111; color: #F5F0E8; font-size: 12px; padding: 8px 12px; cursor: pointer; }
+.play-speech-wrap { flex-shrink: 0; margin-bottom: 6px; }
+.speech-name { display: inline-block; background: #E7352A; color: #111; font-size: 11px; font-weight: 900; padding: 2px 8px; letter-spacing: 1px; clip-path: polygon(4px 0, 100% 0, 100% 100%, 0 100%, 0 4px); }
+.play-character { flex: 1 1 auto; min-height: 0; max-height: 32dvh; position: relative; background: #0d0d0d; border: 3px solid #F5F0E8; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.play-portrait { width: 100%; height: 100%; object-fit: contain; }
+.play-rhythm { text-align: center; flex-shrink: 0; display: block; }
+.bpm-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.bpm-display { font-family: 'Press Start 2P', monospace; font-size: 36px; color: #E7352A; }
+.bpm-label { font-size: 11px; color: #858585; letter-spacing: 2px; margin-top: 2px; }
+.wave { display: flex; align-items: center; justify-content: center; gap: 3px; height: 40px; overflow: visible; }
+.wave span { width: 4px; background: #E7352A; display: block; transform-origin: center center; }
+.wave span:nth-child(1) { height: 10px; }
+.wave span:nth-child(2) { height: 20px; }
+.wave span:nth-child(3) { height: 34px; }
+.wave span:nth-child(4) { height: 20px; }
+.wave span:nth-child(5) { height: 10px; }
+.wave.pulse span { animation: waveBeat 0.15s ease; }
+@keyframes waveBeat {
+  0% { transform: scaleY(1); }
+  50% { transform: scaleY(1.2); }
+  100% { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wave.pulse span { animation: none; }
+}
+.trial-lights-wrap { text-align: center; margin: 4px 0; flex-shrink: 0; }
+.trial-title { font-size: 13px; color: #E7352A; font-weight: 700; margin-bottom: 4px; }
+.trial-lights { display: flex; justify-content: center; gap: 6px; }
+.trial-light { width: 14px; height: 14px; border: 2px solid #8a1a12; background: #222; }
+.trial-light.on { background: #E7352A; box-shadow: 0 0 6px #E7352A; }
+.play-command::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: #E7352A; }
+.surrender-notice { display: none; text-align: center; color: #F5F0E8; background: #111; border: 2px solid #E7352A; padding: 10px 12px; margin: 4px 0; font-weight: 900; font-size: clamp(14px, 3.8vw, 16px); line-height: 1.55; }
+.surrender-notice.show { display: block; }
+.surrender-notice span { display: block; }
+.fallen-rules { display: none; text-align: center; background: #111; border: 2px solid #E7352A; padding: 10px 12px; margin: 4px 0; }
+.fallen-rules.show { display: block; }
+.fallen-rules-title { color: #E7352A; font-weight: 900; font-size: clamp(15px, 4vw, 17px); margin-bottom: 6px; }
+.fallen-rules p { color: #F5F0E8; font-weight: 900; font-size: clamp(14px, 3.6vw, 15px); line-height: 1.5; margin: 4px 0; }
+.fallen-rules p.muted { color: #858585; font-size: clamp(12px, 3.2vw, 13px); font-weight: 700; }
+.final-rules { display: none; text-align: center; background: #111; border: 2px solid #E7352A; padding: 10px 12px; margin: 4px 0; }
+.final-rules.show { display: block; }
+.final-rules-title { color: #E7352A; font-weight: 900; font-size: clamp(15px, 4vw, 17px); margin-bottom: 6px; }
+.final-rules p { color: #F5F0E8; font-weight: 900; font-size: clamp(14px, 3.6vw, 15px); line-height: 1.5; margin: 4px 0; }
+.final-rules p.muted { color: #858585; font-size: clamp(12px, 3.2vw, 13px); font-weight: 700; }
+@media (max-width: 768px) {
+  .play-command::before { content: none; display: none; }
+}
+.cmd-label { font-size: 14px; color: #858585; letter-spacing: 1px; margin-bottom: 4px; }
+.cmd-text { font-size: 18px; font-weight: 900; line-height: 1.3; }
+.cmd-sub { font-size: 13px; color: #aaa; margin-top: 4px; }
+.play-progress { flex-shrink: 0; }
+.final-progress { display: none; flex-shrink: 0; margin-top: 4px; }
+.final-progress.show { display: block; }
+.final-progress-label { text-align: center; color: #E7352A; font-weight: 900; font-size: 14px; letter-spacing: 1px; margin-bottom: 6px; }
+.prog-row, .timer-row { display: flex; justify-content: space-between; font-size: 14px; color: #858585; margin-bottom: 4px; }
+.prog-bar, .timer-bar { height: 10px; background: #222; clip-path: polygon(4px 0, 100% 0, 100% 100%, 0 100%, 0 4px); }
+.prog-fill { height: 100%; width: 0%; background: #E7352A; transition: width 0.3s; }
+.timer-fill { height: 100%; width: 100%; background: #4caf50; transition: width 0.1s linear; }
+.timer-fill.warning { background: #ff9800; }
+.timer-fill.danger { background: #E7352A; }
+.play-actions { display: flex; gap: 8px; flex-shrink: 0; margin-top: 4px; flex-wrap: wrap; }
+.play-btn { flex: 1 1 40%; min-height: 52px; border: 3px solid #F5F0E8; background: #111; color: #F5F0E8; font-size: 15px; font-weight: 700; padding: 12px; cursor: pointer; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); transition: transform 0.08s; }
+#early-btn { flex: 1 1 100%; }
+.play-btn:active { transform: scale(0.97); }
+.play-btn.primary { background: #E7352A; border-color: #E7352A; color: #111; }
+.beat-pulse { transition: transform 0.08s; }
+.beat-pulse.beat { transform: scale(1.15); }
+
+/* ========== Result ========== */
+#result-screen {
+  background: #111;
+  padding: env(safe-area-inset-top, 0px) 14px calc(env(safe-area-inset-bottom, 0px) + 12px);
+  align-items: center;
+  overflow-y: auto;
+  justify-content: flex-start;
+}
+.end-viewport {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0 12px;
+}
+.end-title {
+  display: block;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(20px, 6vw, 30px);
+  color: #E7352A;
+  text-shadow: 3px 3px 0 #4a0d0d;
+  line-height: 1.3;
+  animation: endFade 0.35s ease both;
+}
+.end-sub {
+  width: 100%;
+  text-align: center;
+  color: #F5F0E8;
+  font-weight: 900;
+  font-size: clamp(14px, 3.8vw, 17px);
+  letter-spacing: 2px;
+  margin-top: -2px;
+  animation: endFade 0.45s ease both;
+}
+.end-status {
+  width: 100%;
+  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: #F5F0E8;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+}
+.end-character {
+  width: 100%;
+  flex: 0 1 auto;
+  max-height: 28dvh;
+  background: #0d0d0d;
+  border: 3px solid #F5F0E8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  animation: endFade 0.55s ease both;
+}
+.end-character img { width: 100%; height: 100%; max-height: 28dvh; object-fit: contain; }
+.end-placeholder { display: none; color: #E7352A; font-weight: 900; letter-spacing: 1px; }
+.end-character.failed img { display: none; }
+.end-character.failed .end-placeholder { display: block; }
+.end-speech-wrap { width: 100%; flex-shrink: 0; animation: endFade 0.7s ease both; }
+.end-name {
+  display: inline-block;
+  background: #E7352A;
+  color: #111;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 2px 8px;
+  letter-spacing: 1px;
+}
+.end-speech {
+  background: #F5F0E8;
+  color: #111;
+  border: 3px solid #111;
+  padding: 12px 16px;
+  font-weight: 700;
+  font-size: clamp(14px, 3.6vw, 16px);
+  line-height: 1.6;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  line-break: strict;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+.end-speech small { display: block; margin-top: 8px; color: #666; font-size: 13px; font-weight: 700; line-height: 1.5; }
+.end-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; margin-top: 6px; }
+.end-btn {
+  width: 100%;
+  min-height: 50px;
+  border: 3px solid #F5F0E8;
+  background: #111;
+  color: #F5F0E8;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  text-align: center;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+.end-btn.primary { background: #E7352A; border-color: #E7352A; color: #111; }
+.end-btn:active { transform: scale(0.98); }
+@keyframes endFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .end-title, .end-sub, .end-character, .end-speech-wrap { animation: none; }
+}
+
+.beat-pulse { transition: transform 0.08s; }
+/* Age screen */
+.age-viewport { width: 100%; max-width: 480px; min-height: 100dvh; background: #111; display: flex; flex-direction: column; margin: 0 auto; }
+.age-header { padding: 8px 16px 4px; text-align: center; flex-shrink: 0; }
+.age-title { font-family: 'Press Start 2P', monospace; font-size: clamp(24px, 7vw, 36px); text-shadow: 3px 3px 0 #E7352A; }
+.age-sub { margin-top: 4px; font-size: clamp(12px, 3.2vw, 15px); font-weight: 900; color: #E7352A; letter-spacing: 2px; }
+.age-speech { background: #F5F0E8; color: #111; border: 3px solid #111; padding: 12px 14px; font-weight: 700; font-size: clamp(18px, 4.5vw, 22px); line-height: 1.4; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); flex-shrink: 0; margin-bottom: 6px; }
+.age-character { flex: 1 1 auto; min-height: 0; max-height: 32dvh; position: relative; background: #0d0d0d; border: 3px solid #F5F0E8; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.age-portrait { width: 100%; height: 100%; object-fit: contain; }
+.age-controls { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
+.age-question { font-size: 16px; font-weight: 900; text-align: center; }
+.age-notice { font-size: 11px; color: #858585; text-align: center; line-height: 1.4; }
+.age-btn { width: 100%; min-height: 52px; border: 3px solid #F5F0E8; background: #111; color: #F5F0E8; font-size: 15px; font-weight: 700; padding: 12px; cursor: pointer; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+.age-btn.primary { background: #E7352A; border-color: #E7352A; color: #111; }
+.age-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.menu-header { padding: 8px 16px 4px; text-align: center; flex-shrink: 0; }
+.menu-title { font-family: 'Press Start 2P', monospace; font-size: clamp(24px, 7vw, 36px); text-shadow: 3px 3px 0 #E7352A; }
+.menu-subtitle { margin-top: 4px; font-size: clamp(12px, 3.2vw, 15px); font-weight: 900; color: #E7352A; letter-spacing: 2px; }
+.menu-speech { background: #F5F0E8; color: #111; border: 3px solid #111; padding: 12px 14px; font-weight: 700; font-size: clamp(18px, 4.5vw, 22px); line-height: 1.4; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); flex-shrink: 0; margin-bottom: 6px; }
+.menu-geo { position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 18px, #1a1a1a 18px, #1a1a1a 20px); opacity: 0.35; pointer-events: none; }
+.menu-portrait { width: 100%; height: 100%; object-fit: contain; }
+.menu-controls { padding: 10px 16px 12px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
+.menu-label { font-size: 12px; font-weight: 700; letter-spacing: 2px; color: #E7352A; margin-bottom: 6px; }
+.menu-diffs { display: flex; gap: 8px; }
+.menu-diff { flex: 1; min-height: 52px; background: #111; color: #F5F0E8; border: 3px solid #F5F0E8; padding: 8px 4px; text-align: center; cursor: pointer; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); font-weight: 700; }
+.menu-diff.on { background: #E7352A; border-color: #E7352A; color: #111; }
+.menu-diff .n { font-size: 14px; }
+.menu-diff .t { font-size: 11px; margin-top: 2px; }
+.menu-mode { border: 3px solid #F5F0E8; padding: 10px 12px; display: flex; align-items: center; gap: 10px; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); min-height: 52px; }
+.menu-mode-ico { font-size: 22px; color: #E7352A; }
+.menu-mode-name { font-weight: 900; font-size: 15px; }
+.menu-mode-desc { font-size: 11px; color: #858585; }
+.menu-start { width: 100%; min-height: 52px; background: #E7352A; color: #111; border: none; font-size: 18px; font-weight: 900; padding: 12px; cursor: pointer; clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px); letter-spacing: 2px; position: relative; z-index: 100; pointer-events: auto; }
+.menu-intro { font-size: 12px; line-height: 1.45; color: #858585; text-align: center; margin-top: 8px; }
+.menu-rules { width: 100%; min-height: 48px; background: #111; color: #F5F0E8; border: 3px solid #F5F0E8; font-size: 15px; font-weight: 900; padding: 10px; cursor: pointer; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); letter-spacing: 1px; }
+.rules-modal { position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center; padding: env(safe-area-inset-top, 0px) 14px env(safe-area-inset-bottom, 0px); background: rgba(0,0,0,0.82); }
+.rules-modal.open { display: flex; }
+.rules-panel { width: 100%; max-width: 420px; max-height: min(86dvh, 720px); background: #111; border: 3px solid #F5F0E8; display: flex; flex-direction: column; overflow: hidden; }
+.rules-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px 16px 8px; }
+.rules-title { font-family: 'Press Start 2P', monospace; font-size: clamp(16px, 4.5vw, 22px); color: #E7352A; text-shadow: 2px 2px 0 #4a0d0d; text-align: center; line-height: 1.4; }
+.rules-sub { margin-top: 8px; text-align: center; color: #F5F0E8; font-weight: 900; font-size: 14px; }
+.rules-sec { margin-top: 14px; }
+.rules-sec h3 { color: #E7352A; font-size: 14px; font-weight: 900; letter-spacing: 1px; margin-bottom: 4px; }
+.rules-sec p { color: #F5F0E8; font-size: 13px; line-height: 1.5; }
+.rules-close { flex-shrink: 0; margin: 8px 16px calc(12px + env(safe-area-inset-bottom, 0px)); min-height: 48px; background: #E7352A; color: #111; border: none; font-size: 16px; font-weight: 900; cursor: pointer; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+body.rules-open { overflow: hidden; }
+</style>
+</head>
+<body>
+
+<div id="age-screen" class="screen active">
+  <div class="age-viewport">
+    <div class="age-header">
+      <div class="age-title">MODEUS</div>
+      <div class="age-sub">前高邊緣挑戰</div>
+    </div>
+    <div class="age-speech" id="age-sp">「想跟我玩遊戲？先確認一下你的年齡吧♡」</div>
+    <div class="age-character">
+      <img class="age-portrait" id="age-por" src="https://raw.githubusercontent.com/yu10708c-bot/modeus/main/modeus-smile.jpg" alt="Modeus">
+    </div>
+    <div class="age-controls">
+      <div class="age-question">你已年滿 18 歲嗎？</div>
+      <div class="age-notice">本遊戲僅供年滿 18 歲的成年人使用，包含成人向幻想內容。未滿 18 歲者請勿進入。</div>
+      <button class="age-btn primary" id="age-yes" onclick="confirmAge()">已滿 18 歲・進入遊戲</button>
+      <button class="age-btn secondary" id="age-no" onclick="denyAge()">未滿 18 歲・離開</button>
+    </div>
+  </div>
+</div>
+
+<div id="setup-screen" class="screen">
+  <div class="menu-viewport">
+    <div class="menu-header">
+      <div class="menu-title">MODEUS</div>
+      <div class="menu-subtitle">前高邊緣挑戰</div>
+    </div>
+    <div class="menu-speech" id="menu-sp">「準備好了嗎？前面不准碰。」</div>
+    <div class="menu-character">
+      <div class="menu-geo"></div>
+      <img class="menu-portrait" id="menu-por" src="https://raw.githubusercontent.com/yu10708c-bot/modeus/main/modeus-smile.jpg" alt="Modeus">
+    </div>
+    <div class="menu-controls">
+      <div>
+        <div class="menu-label">難度</div>
+        <div class="menu-diffs">
+          <div class="menu-diff" data-diff="easy" onclick="selectMenuDiff(this)">
+            <div class="n">輕鬆</div>
+            <div class="t">20 分+ · 超慢</div>
+          </div>
+          <div class="menu-diff on" data-diff="normal" onclick="selectMenuDiff(this)">
+            <div class="n">標準</div>
+            <div class="t">40 分+ · 中等</div>
+          </div>
+          <div class="menu-diff" data-diff="hard" onclick="selectMenuDiff(this)">
+            <div class="n">高壓</div>
+            <div class="t">60 分+ · 較快</div>
+          </div>
+        </div>
+        <div class="menu-intro">跟隨 Modeus 的節奏，完成指令、接受試煉，迎接屬於你的結局。</div>
+      </div>
+      <div class="menu-mode">
+        <div class="menu-mode-ico">♪</div>
+        <div>
+          <div class="menu-mode-name">節拍器</div>
+          <div class="menu-mode-desc">跟隨 BPM · Modeus 下達指令</div>
+        </div>
+      </div>
+      <button class="menu-rules" type="button" onclick="openRules()">遊戲規則</button>
+      <button class="menu-start" onclick="startGame()">開始挑戰 ▶</button>
+    </div>
+  </div>
+</div>
+
+<div id="rules-modal" class="rules-modal" onclick="closeRules(event)">
+  <div class="rules-panel" onclick="event.stopPropagation()">
+    <div class="rules-body">
+      <div class="rules-title">HOW TO PLAY</div>
+      <div class="rules-sub">「你以為這只是普通的節拍器嗎？」</div>
+      <div class="rules-sec"><h3>1. 跟隨節奏</h3><p>依照 Modeus 的指令與 BPM 完成挑戰。</p></div>
+      <div class="rules-sec"><h3>2. 累積淫蕩值</h3><p>完成指令即可累積淫蕩值，填滿後將進入墮落試煉。</p></div>
+      <div class="rules-sec"><h3>3. 決定你的命運</h3><p>墮落試煉中可以選擇提前成功，取得 VICTORY；若失敗則必須接受懲罰。</p></div>
+      <div class="rules-sec"><h3>4. 解鎖終局試煉</h3><p>每次完成墮落試煉的懲罰，就會點亮一盞燈。集滿後將迎接最終挑戰。</p></div>
+      <div class="rules-sec"><h3>5. 迎接結局</h3><p>通過終局試煉即可 ESCAPED，失敗則 GAME OVER。</p></div>
+      <div class="rules-sec"><h3>難度差異</h3><p>輕鬆、標準、高壓會影響節奏強度及通關所需的燈數。</p></div>
+    </div>
+    <button class="rules-close" type="button" onclick="closeRules()">關閉</button>
+  </div>
+</div>
+
+<div id="play-screen" class="screen">
+  <div class="play-header">
+    <div class="phase-tag" id="phase-label">MODEUS調教</div>
+    <div class="play-controls">
+      <button class="icon-btn" id="sound-btn" onclick="toggleSound()">🔊</button>
+      <button class="icon-btn" id="beat-btn" onclick="cycleSfx()">🔔</button>
+      <button class="icon-btn active" id="sfx-btn" onclick="toggleMusic()">🎵</button>
+      <button class="safe-exit" onclick="safeExit()">安全退出</button>
+    </div>
+  </div>
+
+  <div class="play-speech-wrap">
+    <div class="speech-name">MODEUS</div>
+    <div class="play-speech" id="dialogue">「準備好了嗎？乖乖聽我的話。」</div>
+  </div>
+
+  <div class="play-character">
+    <img class="play-portrait" id="portrait" src="https://raw.githubusercontent.com/yu10708c-bot/modeus/main/modeus-smile.jpg" alt="Modeus">
+  </div>
+
+  <div class="play-rhythm">
+    <div class="bpm-row">
+      <div class="wave" id="wave-l"><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="bpm-display beat-pulse" id="bpm-display">90</div>
+      <div class="wave" id="wave-r"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="bpm-label">BPM</div>
+  </div>
+
+  <div class="trial-lights-wrap">
+    <div class="trial-title">墮落試煉 <span id="trial-count">0 / 3</span></div>
+    <div class="trial-lights" id="trial-lights"></div>
+  </div>
+  <div class="surrender-notice" id="surrender-notice">
+    <span>「遊戲一旦開始，就沒有投降這個選項。」</span>
+    <span>「乖乖接受懲罰，然後繼續挑戰吧♡」</span>
+  </div>
+  <div class="surrender-notice" id="fallen-notice">
+    <span>「剛才明明給過你獲勝的機會，是你自己沒把握住♡」</span>
+    <span>「現在乖乖接受懲罰，然後繼續挑戰吧。」</span>
+  </div>
+  <div class="fallen-rules" id="fallen-rules">
+    <div class="fallen-rules-title">墮落試煉規則</div>
+    <p>「只有在墮落試煉中，你才能夠射精，但只能被插到射。」</p>
+    <p>「時間結束前沒有達成目標，就乖乖接受懲罰♡」</p>
+    <p class="muted">「挑戰期間請遵守指定規則，不准碰你的小肉棒。」</p>
+  </div>
+  <div class="play-command">
+    <div class="cmd-label">當前指令</div>
+    <div class="cmd-text" id="command-text">等待開始…</div>
+    <div class="cmd-sub" id="command-sub"></div>
+  </div>
+
+  <div class="play-progress">
+    <div class="prog-row">
+      <span>淫蕩度</span>
+      <span id="perm-percent">0%</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="perm-fill"></div></div>
+    <div class="timer-row">
+      <span>本條倒計時</span>
+      <span id="timer-seconds">50</span>
+    </div>
+    <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+  </div>
+  <div class="final-progress" id="final-progress">
+    <div class="final-progress-label">終局試煉</div>
+    <div class="timer-bar"><div class="timer-fill" id="final-fill"></div></div>
+  </div>
+  <div class="final-rules" id="final-rules">
+    <div class="final-rules-title">終局試煉規則</div>
+    <p>「前面給過你那麼多射出的機會，你卻一次都沒把握住♡」</p>
+    <p>「這次規則反過來了。你必須忍耐到最後，才能從我手中逃脫。」</p>
+    <p>「你必須同時自慰 和 肛交，用上雙手吧。」</p>
+    <p class="muted">「堅持到倒數結束即可 ESCAPED；中途認輸則 GAME OVER。」</p>
+  </div>
+
+  <div class="play-actions">
+    <button class="play-btn" id="early-btn" onclick="earlyFailure()" style="display:none">投降</button>
+    <button class="play-btn primary" id="cum-btn" onclick="cumCommand()" style="display:none">射了</button>
+  </div>
+</div>
+
+<div id="result-screen" class="screen">
+  <div class="end-viewport">
+    <div class="end-title" id="result-title" style="display:block;width:100%;text-align:center;margin-left:auto;margin-right:auto;">VICTORY</div>
+    <div class="end-sub" id="result-sub">挑戰成功</div>
+    <div class="end-status" id="result-status">CHALLENGE COMPLETE</div>
+    <div class="end-character" id="result-character">
+      <img id="result-portrait" src="./modeus-excited.jpg" alt="Modeus">
+      <div class="end-placeholder">MODEUS</div>
+    </div>
+    <div class="end-speech-wrap">
+      <div class="end-name">MODEUS</div>
+      <div class="end-speech" id="result-desc"></div>
+    </div>
+    <div class="end-actions">
+      <button class="end-btn primary" onclick="restartGame()">再來一次</button>
+      <button class="end-btn" onclick="returnToMenu()">返回</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DIALOGUE_DB = [
+  {
+    "id": 1,
+    "text": "這一輪由我帶。你只要把小穴交出來。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 2,
+    "text": "跟着拍子被插。我想看你一拍一拍發燙。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 3,
+    "text": "別急。我比較想先猜猜你現在是什麼表情。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 4,
+    "text": "假肉棒繼續動。不准停。",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 5,
+    "text": "我准你繼續。算我今天比較好心。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 6,
+    "text": "慢一點插。我想看你每一拍都在忍。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 7,
+    "text": "前面不准碰。只用小穴。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 8,
+    "text": "做得不錯。等等，我好像不該這麼快稱讚你。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 9,
+    "text": "我在看你被插。你最好讓我覺得值得。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 10,
+    "text": "再深一點。頂住那個會讓你想射的地方。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 11,
+    "text": "小穴夾緊。然後繼續被抽插。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 12,
+    "text": "這一輪我不會輕易放你走。先說好。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 13,
+    "text": "聽拍子進出。比聽自己的心跳有用。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 14,
+    "text": "我允許你被插。所以請把欲望表現出來。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 15,
+    "text": "別看前面。看倒數，讓小穴被使用。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 16,
+    "text": "繼續抽。我想看你下一拍會不會更濕。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 17,
+    "text": "這一關由我說了算。你負責張開。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 18,
+    "text": "先別想結束。我還沒玩夠你的反應。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 19,
+    "text": "你現在只要一件事：把注意力交給我。",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 20,
+    "text": "很好。這種想射又不敢碰前面的樣子，我喜歡。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 21,
+    "text": "下一條我會自己決定怎麼插你。你就期待。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 22,
+    "text": "節奏在走。你的小穴最好別先垮。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 23,
+    "text": "時間還很多。不必急着求我心軟。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 24,
+    "text": "這一輪我想看你誠實地被插，不是逞強。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 25,
+    "text": "跟上。我想看你被節奏一點點插開。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 26,
+    "text": "別看我。看倒數。我會看你的小穴。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 27,
+    "text": "我准你再留一會兒。只限現在。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 28,
+    "text": "再集中一點。我想看你逐漸想射的邊緣。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 29,
+    "text": "這一關沒有捷徑。只有假肉棒和拍子。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 30,
+    "text": "聽好。下一拍開始，不准用手。",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 31,
+    "text": "這種乖樣子……哼，還算值得多看兩眼。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 32,
+    "text": "我在等你跟上。別讓我想插得更壞。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 33,
+    "text": "這一輪我親自盯你被插。請好好發燙。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 34,
+    "text": "節奏是我選的。至少讓小穴假裝被牽動。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 35,
+    "text": "我在想，你現在是不是已經有點撐不住了。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 36,
+    "text": "不用加戲。你現在的樣子已經夠讓我感興趣了。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 37,
+    "text": "我的命令很簡單。張開，跟上，想射就忍。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 38,
+    "text": "這一關我想看你從容地被使用，不是求饒。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 39,
+    "text": "聽拍子。它比你的自制力準。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 40,
+    "text": "我還沒點頭。所以先把那股衝動收好。",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 41,
+    "text": "很好。這種又聽話又忍不住的樣子，我記住了。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 42,
+    "text": "下一條我會換個方式玩你。準備好。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 43,
+    "text": "把節奏握穩。我討厭你在最想射時停。",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 44,
+    "text": "這一輪我來帶。你負責讓我看到更誠實的你。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 45,
+    "text": "再給你一次機會。這次別急着越線。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 46,
+    "text": "專注。我想看你真正被假肉棒抓住的樣子。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 47,
+    "text": "這一關沒有商量。只有被插，或被我笑。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 48,
+    "text": "做得好。先收下，後面我可能會更壞。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 49,
+    "text": "我在數拍子。你最好也在數自己還能忍多久。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 50,
+    "text": "別慌。假肉棒還在，我想看的也還在。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 51,
+    "text": "我想看你把這一輪走完，而不是中途潰掉。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 52,
+    "text": "聽我的。比聽自己想射的衝動有用。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 53,
+    "text": "下一拍開始。請拿出你最想被使用的狀態。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 54,
+    "text": "規則很簡單。跟上，然後期待我的下一句。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 55,
+    "text": "先別想結束。我還想多猜幾次你的反應。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 56,
+    "text": "節奏沒亂就好。我最討厭你在關鍵時停。",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 57,
+    "text": "這一關我親自選的。所以請認真被玩。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 58,
+    "text": "別催我。我還沒看夠。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 59,
+    "text": "跟上拍子進出。這是今天唯一的要求。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 60,
+    "text": "這種穩定的渴……哼，值得我多留你一會兒。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 61,
+    "text": "我允許你挑戰更快的抽插。別辜負。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 62,
+    "text": "聽好了。下一條會讓你更想射。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 63,
+    "text": "我在看這一輪的你，不是在看你慌不慌。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 64,
+    "text": "下一拍會不會更誠實？我有點期待。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 65,
+    "text": "我說了算。你負責讓這一輪又色又乖。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 66,
+    "text": "才剛被插，你就露出那種想射的臉了？",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 67,
+    "text": "別看我。看倒數。我會看你的小穴發燙。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 68,
+    "text": "你好像高估了自己的自制力。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 69,
+    "text": "真有趣。你居然還以為能不被插到腿軟。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 70,
+    "text": "你該不會正在打什麼歪主意吧？我只是隨便猜。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 71,
+    "text": "不用解釋。我猜你的表情已經很誠實了。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 72,
+    "text": "我有說過會讓你舒服地射嗎？",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 73,
+    "text": "這就是極限？未免也太早投降了。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 74,
+    "text": "哼。至少你還知道怎麼繼續陪我玩。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 75,
+    "text": "別急着得意。更淫的抽插還在後面。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 76,
+    "text": "想知道我下一手怎麼逗你？偏不說。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 77,
+    "text": "你以為我會這麼快心軟？真可愛。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 78,
+    "text": "我剛才差點說你的小穴很色。差一點。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 79,
+    "text": "以為我會准你？你也太信任我了。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 80,
+    "text": "別用那種眼神求我。我還沒玩夠。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 81,
+    "text": "如果節奏再快一點，你還能保持這種表情嗎？",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 82,
+    "text": "你越緊張，我就越想知道你的極限在哪。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 83,
+    "text": "你可以猜我的下一句話。猜不到我會插多深。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 84,
+    "text": "我最喜歡你明明想撐，卻開始動搖的時候。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 85,
+    "text": "你現在是不是後悔選了一個會玩你小穴的難度？",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 86,
+    "text": "怎麼突然安靜了？剛才不是被插得很有感覺嗎？",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 87,
+    "text": "你是不是很在意進度條？我總覺得你在心裡算。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 88,
+    "text": "想偷偷跳過最想射的這一段？沒有。",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 89,
+    "text": "你是不是開始習慣被我盯着了？",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 90,
+    "text": "別只顧着看我。假肉棒也會讓你想射。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 91,
+    "text": "你該不會剛剛偷偷嘆了口氣吧？我只是亂猜。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 92,
+    "text": "你真的很在意那些紅燈。是在期待最後被玩嗎？",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 93,
+    "text": "你的反應比你的嘴誠實。這點我很確定。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 94,
+    "text": "剛才那一下，我猜你一定有反應。可以再來一次嗎？",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 95,
+    "text": "你現在是不是很想聽我說「可以了」？",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 96,
+    "text": "倒數還在走。你該不會已經把注意力放別處了吧？",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 97,
+    "text": "你似乎開始享受被使用了。有點危險。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 98,
+    "text": "我一直看着這一輪。別讓我覺得無聊。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 99,
+    "text": "你是不是以為我會突然大發慈悲？",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 100,
+    "text": "如果我現在說恭喜，你會露出什麼表情？",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 101,
+    "text": "你越想預測我，我就越想換一種方式插你。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 102,
+    "text": "別急。我還留了幾個會讓你更難專心的點子。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 103,
+    "text": "你真以為我會讓你輕鬆滿足？",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 104,
+    "text": "我可沒答應要在你最想要的時候放行。",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 105,
+    "text": "我有點好奇，你的自制還能撐到什麼時候。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 106,
+    "text": "最好玩的是，你還不知道我下一手有多壞。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 107,
+    "text": "我是不是該插得溫柔一點？嗯……那樣就不可愛了。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 108,
+    "text": "看你這麼認真，我忽然覺得這一輪結束得太快會很可惜。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 109,
+    "text": "你現在是不是開始懷疑自己還能撐多久？",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 110,
+    "text": "哼。今天被插的你，比我預期的還好看。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 111,
+    "text": "才、才不是因為你的小穴很色才多看的！",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 112,
+    "text": "哼。我只是剛好覺得你現在的表情還不錯。",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 113,
+    "text": "你忍射忍得不錯……不對，我什麼都沒說。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 114,
+    "text": "不要用那種求我讓你射的眼神看我！",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 115,
+    "text": "我才沒有在意你有多想要。只是……剛好注意到。",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 116,
+    "text": "你能被插到這裡……稍微讓我意外。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 117,
+    "text": "別誤會。我只是想知道你會被逗到哪裡。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 118,
+    "text": "你笑什麼？被插到舒服就承認啊。",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 119,
+    "text": "我、我只是照規則不讓你射而已！",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 120,
+    "text": "你認真成這樣，害我都不知道該怎麼笑你了。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 121,
+    "text": "不准因為我說你的小穴可愛就得意。",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 122,
+    "text": "哼。這次就算你合格吧。只有這次。",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 123,
+    "text": "我只是覺得你比其他挑戰者更容易讓我分心。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 124,
+    "text": "你是不是故意把小穴表現得這麼想要？",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 125,
+    "text": "才不是我在等你求射。是計時器還沒結束！",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 126,
+    "text": "好吧。我承認你讓我有點意外。只有一點點。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 127,
+    "text": "你居然還記得不准碰前面？",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 128,
+    "text": "我沒有臉紅！是畫面本來就紅色的！",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 129,
+    "text": "你再這樣看着畫面，我會忍不住想捉弄你！",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 130,
+    "text": "哼……下一條抽插，你的小穴準備好了嗎？",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 131,
+    "text": "我才不是在幫你。我只是不想這麼快結束。",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 132,
+    "text": "別露出那種表情。我會以為你很喜歡被我玩。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 133,
+    "text": "你的反應讓我很高興。咳，我是說讓遊戲更淫。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 134,
+    "text": "你竟然還記得我說過不准射……這有點犯規。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 135,
+    "text": "我才沒有在盯你。只是剛好沒有別的事做。",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 136,
+    "text": "不准用那種眼神看我。我會想插得更深。",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 137,
+    "text": "這一輪還算好看。沒有別的意思。真的。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 138,
+    "text": "你被插成那樣，我要怎麼繼續兇你？",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 139,
+    "text": "我才沒有期待你下一拍。只是……想確認一下。",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 140,
+    "text": "好啦。這次算你沒有讓我失望。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 141,
+    "text": "別以為我會因為你色就讓你射。才不會。",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 142,
+    "text": "我只是……覺得你今天被插的表情有點色情。就這樣。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 143,
+    "text": "你再繼續這副樣子，我真的會更壞。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 144,
+    "text": "哼。能被插到這裡還不射，也不是完全沒用。",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 145,
+    "text": "我才沒有在等你的反應。只是剛好有空看。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 146,
+    "text": "你表現好的時候，我比較難只嘲諷。真麻煩。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 147,
+    "text": "不准因為我多看你的穴一眼就誤會。",
+    "expression": "angry",
+    "trigger": "general"
+  },
+  {
+    "id": 148,
+    "text": "我只是覺得這一關很襯你現在的樣子。沒別的。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 149,
+    "text": "你再這樣，我會以為自己太容易心軟。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 150,
+    "text": "哼……下一輪也給我好好被插。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 151,
+    "text": "你為什麼還想被插？是因為我，還是因為拍子？",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 152,
+    "text": "你是在期待我讓你射嗎？真巧，我也在期待你的表情。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 153,
+    "text": "我原本想插得溫柔一點。可是那樣就看不到你發燙了。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 154,
+    "text": "我有準備讓你射的獎勵。什麼？你以為我會一直吊着？",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 155,
+    "text": "這個節奏是我選的。我想看它怎麼把你的小穴牽動。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 156,
+    "text": "你還想被我看着挨插，這件事讓我有點開心。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 157,
+    "text": "人在被插到想射的時候真誠實。我有點喜歡。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 158,
+    "text": "慢一點比較折磨人，快一點又比較誠實。我兩個都想看。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 159,
+    "text": "你知道嗎？我其實很認真在看你忍射的樣子。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 160,
+    "text": "如果這一輪你撐過去，我會記住你被插的表情。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 161,
+    "text": "我有時候會想，你是為了過關，還是為了被我多玩一會兒。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 162,
+    "text": "你剛才那個停頓，讓我有點想看你的小穴。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 163,
+    "text": "我不是每次都想嘲諷。有時候只是覺得你被插得很色。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 164,
+    "text": "你能忍到這裡不射，我其實有點高興。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 165,
+    "text": "我準備下一關的時候，有想過會不會讓你更想被插。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 166,
+    "text": "你被插時看倒數的表情，每次都更誠實。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 167,
+    "text": "要是你突然說想停，我大概會有點失落。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 168,
+    "text": "我剛才差點問你要不要我插得溫柔一點。差點。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 169,
+    "text": "你記得不准碰前面，讓我覺得自己的壞心沒有白費。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 170,
+    "text": "我有時候會認真想，下一句該怎麼逗你的小穴。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 171,
+    "text": "你今天被插的節奏，比我預期的更讓人想看。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 172,
+    "text": "我不是只會看你出錯。我也會看你很色的時候。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 173,
+    "text": "如果你用後面撐到最後，我會好好獎你一次。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 174,
+    "text": "我剛才忽然覺得，這一關很適合看你被插到發燙。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 175,
+    "text": "你問我為什麼還在看？因為我想看你被使用。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 176,
+    "text": "你的堅持有時候很笨，但挨插的時候很漂亮。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 177,
+    "text": "我準備讓你射的時候，有想過你會露出什麼表情。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 178,
+    "text": "你不用一直緊張。我又不會突然不玩你。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 179,
+    "text": "我有時候會好奇，你心裡在數還能被插幾拍。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 180,
+    "text": "這一輪如果好看，我會多插你一會兒。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 181,
+    "text": "你能跟上，我其實……還算喜歡你的小穴。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 182,
+    "text": "我不是每次都想贏過你。有時候只是想看你被插。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 183,
+    "text": "你今天讓我覺得，把遊戲做成這樣是對的。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 184,
+    "text": "如果下一關你也忍住了，我會認真考慮讓你射。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 185,
+    "text": "我在這裡。所以你可以繼續被插，不用急着結束。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 186,
+    "text": "你做得不錯。等等，我剛才是不是稱讚你了？",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 187,
+    "text": "比我預期的還能撐。真有點可愛。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 188,
+    "text": "看來我稍微低估你被插時的耐力了。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 189,
+    "text": "很好。至少你沒有在關鍵時刻自己亂來。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 190,
+    "text": "這次值得一句稱讚。只有一句，別太開心。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 191,
+    "text": "真令人意外。你居然能被插成這樣還不射。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 192,
+    "text": "不錯嘛。讓我開始期待你下一輪的表情。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 193,
+    "text": "好吧。承認你現在的樣子好看，也不算丟臉。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 194,
+    "text": "這一拍很穩。我看見你在忍射。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 195,
+    "text": "你這一輪的狀態，比剛開始更讓人想看。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 196,
+    "text": "這種被節奏抽着的樣子，值得我多看。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 197,
+    "text": "你沒有亂。在這麼想射的時候，這很了不起。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 198,
+    "text": "我本來準備笑你的。結果你表現得太好。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 199,
+    "text": "這一輪穩成這樣，我差點想放你一馬。差點。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 200,
+    "text": "你跟上了。在這種抽插下，不容易。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 201,
+    "text": "這種又想要又乖的樣子，我會記住。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 202,
+    "text": "你今天讓我覺得，稱讚你也不算吃虧。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 203,
+    "text": "這一拍插的時機剛剛好。我有點滿意。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 204,
+    "text": "你沒有掉隊。我有點想再深一點。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 205,
+    "text": "這種認真，比逞強好看多了。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 206,
+    "text": "我差點要說你很可愛。差點。當我沒說。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 207,
+    "text": "你這一輪的節奏，配得上我想看的表情。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 208,
+    "text": "做得好。先收下，後面我會插得更壞。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 209,
+    "text": "我猜你正在忍。如果我猜對了，就當我厲害。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 210,
+    "text": "這一關你的小穴守得很漂亮。我想獎你。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 211,
+    "text": "放心。我對每個被插的人都很公平。大概吧。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 212,
+    "text": "你看起來想射。真巧，我想看的部分剛好還不能射。",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 213,
+    "text": "我原本準備了溫柔模式。等等，你現在被插的不就是嗎？",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 214,
+    "text": "要不要我替你加油？加油。好了，繼續被插。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 215,
+    "text": "你問我還要被插多久？我比較想知道你還能忍多久。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 216,
+    "text": "好消息是你還在被使用。壞消息是我還沒玩夠。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 217,
+    "text": "你真的很努力挨插。這讓我看得更開心。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 218,
+    "text": "如果眼神能讓我允許射，你剛才應該已經求我了。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 219,
+    "text": "我剛才想給你一個很色的插法提示。但我忘了。",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 220,
+    "text": "想暫停？可以。不過我會有點失落。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 221,
+    "text": "我對自己的壞心很有信心。你的小穴？我只看反應。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 222,
+    "text": "這場遊戲最棒的地方，是我可以一直看你被插。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 223,
+    "text": "你是不是在想，為什麼我會這麼喜歡看你忍射？",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 224,
+    "text": "如果你撐到最後，我會認真考慮給你一句真正的稱讚。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 225,
+    "text": "我其實準備了讓你高潮的獎勵。至於多色，等你成功。",
+    "expression": "excited",
+    "trigger": "general"
+  },
+  {
+    "id": 226,
+    "text": "你今天被插的樣子已經讓我笑了好幾次。謝謝。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 227,
+    "text": "好了。別一直看我。下一拍也會插到你。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 228,
+    "text": "我本來想說一句很淫的話。結果自己先笑了。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 229,
+    "text": "你知道嗎？我設計這一關，就是想看你被插的表情。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 230,
+    "text": "我不會讀心。所以請把想射表現在小穴上。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 231,
+    "text": "你再被插到嘆氣，我會以為我玩得太成功。",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 232,
+    "text": "我沒有偷懶。只是剛好想看你忙着忍射。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 233,
+    "text": "這一關我本來想取得更下流。後來覺得你的表情就夠了。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 234,
+    "text": "你問我公不公平？我想插你，這很公平。",
+    "expression": "default",
+    "trigger": "general"
+  },
+  {
+    "id": 235,
+    "text": "我剛剛差點說可以射了。差點。你沒聽見。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 236,
+    "text": "人被插到想射時的倒數恐懼，我看不膩。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 237,
+    "text": "我不是遲到。我是在等你更想被插的時機。",
+    "expression": "smile",
+    "trigger": "general"
+  },
+  {
+    "id": 238,
+    "text": "你再看我，我會以為自己今天特別讓你的小穴渴。",
+    "expression": "laugh",
+    "trigger": "general"
+  },
+  {
+    "id": 239,
+    "text": "我準備了很多句嘲諷。結果你今天被插得太誠實。",
+    "expression": "bored",
+    "trigger": "general"
+  },
+  {
+    "id": 240,
+    "text": "好了。玩笑到此。下一拍請繼續被使用。",
+    "expression": "lounge",
+    "trigger": "general"
+  },
+  {
+    "id": 241,
+    "text": "這個速度很溫柔。適合慢慢把小穴插開。",
+    "expression": "desk",
+    "trigger": "low_bpm"
+  },
+  {
+    "id": 242,
+    "text": "慢一點插也好。我想看你每一拍都在忍。",
+    "expression": "lounge",
+    "trigger": "low_bpm"
+  },
+  {
+    "id": 243,
+    "text": "這種節奏很適合把想射的感覺養起來。",
+    "expression": "smile",
+    "trigger": "low_bpm"
+  },
+  {
+    "id": 244,
+    "text": "低速最容易想摸前面。我會看着。",
+    "expression": "bored",
+    "trigger": "low_bpm"
+  },
+  {
+    "id": 245,
+    "text": "這個 BPM 剛剛好。不急，但會讓小穴想要。",
+    "expression": "desk",
+    "trigger": "mid_bpm"
+  },
+  {
+    "id": 246,
+    "text": "中等速度。最容易露出你被插的真實反應。",
+    "expression": "default",
+    "trigger": "mid_bpm"
+  },
+  {
+    "id": 247,
+    "text": "這個速度我很喜歡。穩，又有一點壞。",
+    "expression": "smile",
+    "trigger": "mid_bpm"
+  },
+  {
+    "id": 248,
+    "text": "節奏變快了。你的小穴發現了嗎？",
+    "expression": "excited",
+    "trigger": "bpm_increase"
+  },
+  {
+    "id": 249,
+    "text": "抽得更快了。這次可別在最想射時亂掉。",
+    "expression": "excited",
+    "trigger": "bpm_increase"
+  },
+  {
+    "id": 250,
+    "text": "拍子往上走了。希望你還忍得住不射。",
+    "expression": "desk",
+    "trigger": "bpm_increase"
+  },
+  {
+    "id": 251,
+    "text": "又快了一點。我故意想看你被插得更誠實。",
+    "expression": "laugh",
+    "trigger": "bpm_increase"
+  },
+  {
+    "id": 252,
+    "text": "速度降下來了。趁現在把想射的感覺留住。",
+    "expression": "desk",
+    "trigger": "bpm_decrease"
+  },
+  {
+    "id": 253,
+    "text": "慢下來了。不是結束，是讓你更清楚自己有多想被插。",
+    "expression": "smile",
+    "trigger": "bpm_decrease"
+  },
+  {
+    "id": 254,
+    "text": "拍子退了一步。你應該覺得小穴更難忍了吧。",
+    "expression": "lounge",
+    "trigger": "bpm_decrease"
+  },
+  {
+    "id": 255,
+    "text": "這個速度對你的穴來說剛剛好，剛好會發燙。",
+    "expression": "smile",
+    "trigger": "mid_bpm"
+  },
+  {
+    "id": 256,
+    "text": "別被數字嚇到。真正危險的是你想射的反應。",
+    "expression": "laugh",
+    "trigger": "high_bpm"
+  },
+  {
+    "id": 257,
+    "text": "插得快起來了。我最喜歡這種時候你的表情。",
+    "expression": "excited",
+    "trigger": "high_bpm"
+  },
+  {
+    "id": 258,
+    "text": "高速度最誠實。小穴忍不住就會露出來。",
+    "expression": "angry",
+    "trigger": "high_bpm"
+  },
+  {
+    "id": 259,
+    "text": "你現在應該很熟悉那個會讓你想射的滴答聲了。",
+    "expression": "desk",
+    "trigger": "general"
+  },
+  {
+    "id": 260,
+    "text": "節奏穩定下來了。現在輪到你繼續被插。",
+    "expression": "smile",
+    "trigger": "mid_bpm"
+  },
+  {
+    "id": 261,
+    "text": "才剛開始被插，就已經這麼在意自己有多想射了？",
+    "expression": "lounge",
+    "trigger": "progress_low"
+  },
+  {
+    "id": 262,
+    "text": "進度條有動靜了。你的小穴也是。",
+    "expression": "smile",
+    "trigger": "progress_low"
+  },
+  {
+    "id": 263,
+    "text": "現在還早。別急着求我讓你射。",
+    "expression": "bored",
+    "trigger": "progress_low"
+  },
+  {
+    "id": 264,
+    "text": "才三分之一。後面會被插得更難忍。",
+    "expression": "default",
+    "trigger": "progress_low"
+  },
+  {
+    "id": 265,
+    "text": "已經過半了。你被插的表情更色了。",
+    "expression": "excited",
+    "trigger": "progress_mid"
+  },
+  {
+    "id": 266,
+    "text": "進度條越來越滿。我也越來越想玩你。",
+    "expression": "lounge",
+    "trigger": "progress_mid"
+  },
+  {
+    "id": 267,
+    "text": "過了一半。現在停下會很可惜，也很色。",
+    "expression": "smile",
+    "trigger": "progress_mid"
+  },
+  {
+    "id": 268,
+    "text": "你離下一場更深的使用只差一點點。",
+    "expression": "excited",
+    "trigger": "progress_high"
+  },
+  {
+    "id": 269,
+    "text": "快滿了。我已經開始期待你被插到的表情。",
+    "expression": "excited",
+    "trigger": "progress_high"
+  },
+  {
+    "id": 270,
+    "text": "只剩最後一段。別在最想射的時候分心。",
+    "expression": "angry",
+    "trigger": "progress_high"
+  },
+  {
+    "id": 271,
+    "text": "下一場試煉，正在等一個更誠實的小穴。",
+    "expression": "lounge",
+    "trigger": "progress_high"
+  },
+  {
+    "id": 272,
+    "text": "第一盞燈亮了。你被插的故事才剛開始。",
+    "expression": "excited",
+    "trigger": "first_light"
+  },
+  {
+    "id": 273,
+    "text": "一盞燈。我們還有很多輪可以玩你。",
+    "expression": "smile",
+    "trigger": "first_light"
+  },
+  {
+    "id": 274,
+    "text": "已經一半了。那些燈是你忍着被插的證明。",
+    "expression": "excited",
+    "trigger": "lights_halfway"
+  },
+  {
+    "id": 275,
+    "text": "亮起一半了。現在放棄會很可惜。",
+    "expression": "default",
+    "trigger": "lights_halfway"
+  },
+  {
+    "id": 276,
+    "text": "只剩下一盞。我已經有點想看你射了。",
+    "expression": "excited",
+    "trigger": "one_light_remaining"
+  },
+  {
+    "id": 277,
+    "text": "最後一盞還沒亮。你的小穴應該也感覺到了。",
+    "expression": "lounge",
+    "trigger": "one_light_remaining"
+  },
+  {
+    "id": 278,
+    "text": "紅燈全亮的瞬間，我會好好看你被使用。",
+    "expression": "excited",
+    "trigger": "all_lights_complete"
+  },
+  {
+    "id": 279,
+    "text": "全部亮了。最後的試煉，可以開始玩你了。",
+    "expression": "excited",
+    "trigger": "all_lights_complete"
+  },
+  {
+    "id": 280,
+    "text": "燈滿了。要進入最想射的部分了。",
+    "expression": "smile",
+    "trigger": "trial_transition"
+  },
+  {
+    "id": 281,
+    "text": "嗯？這麼快就被插到沒忍住了？",
+    "expression": "bored",
+    "trigger": "early_failure"
+  },
+  {
+    "id": 282,
+    "text": "這一輪進度歸零。燈還在，你的小穴也還在。",
+    "expression": "default",
+    "trigger": "early_failure"
+  },
+  {
+    "id": 283,
+    "text": "別看那些紅燈。它們沒有因為你想射而消失。",
+    "expression": "smile",
+    "trigger": "early_failure"
+  },
+  {
+    "id": 284,
+    "text": "這一輪要重來。想射的感覺也要重新被插出來。",
+    "expression": "desk",
+    "trigger": "early_failure"
+  },
+  {
+    "id": 285,
+    "text": "我還以為你這次能被插到最後。有點可惜。",
+    "expression": "lounge",
+    "trigger": "early_failure"
+  },
+  {
+    "id": 286,
+    "text": "至少你還有機會。燈我幫你留着。",
+    "expression": "smile",
+    "trigger": "early_failure"
+  },
+  {
+    "id": 287,
+    "text": "進度清掉了。不是整場重來，只是這一輪。",
+    "expression": "default",
+    "trigger": "early_failure"
+  },
+  {
+    "id": 288,
+    "text": "下一輪會不會被插得更色？我有點期待。",
+    "expression": "excited",
+    "trigger": "early_failure"
+  },
+  {
+    "id": 289,
+    "text": "没忍住一次不算什麼。問題是你會不會更想被玩。",
+    "expression": "bored",
+    "trigger": "early_failure"
+  },
+  {
+    "id": 290,
+    "text": "好了。重新被插。這次讓我看你更誠實。",
+    "expression": "smile",
+    "trigger": "early_failure"
+  },
+  {
+    "id": 291,
+    "text": "我沒有生氣。只是有點失望，也有點喜歡你失控。",
+    "expression": "default",
+    "trigger": "early_failure"
+  },
+  {
+    "id": 292,
+    "text": "燈還亮着。你沒有白被插。",
+    "expression": "smile",
+    "trigger": "early_failure"
+  },
+  {
+    "id": 293,
+    "text": "懲罰時間。這一輪想射的代價，自己收下。",
+    "expression": "angry",
+    "trigger": "penalty"
+  },
+  {
+    "id": 294,
+    "text": "規則就是規則。即使是我想繼續插你的時候。",
+    "expression": "bored",
+    "trigger": "penalty"
+  },
+  {
+    "id": 295,
+    "text": "這一輪作廢。下一輪再證明你能被插着忍。",
+    "expression": "desk",
+    "trigger": "penalty"
+  },
+  {
+    "id": 296,
+    "text": "我不會拿走已經亮的燈。只拿這一輪的進度。",
+    "expression": "smile",
+    "trigger": "penalty"
+  },
+  {
+    "id": 297,
+    "text": "懲罰結束。繼續被插。我還沒看夠。",
+    "expression": "lounge",
+    "trigger": "penalty"
+  },
+  {
+    "id": 298,
+    "text": "好了。代價付過了。回到讓你想射的節奏上。",
+    "expression": "default",
+    "trigger": "penalty"
+  },
+  {
+    "id": 299,
+    "text": "這一輪的進度沒了。想被插的感覺可以留下。",
+    "expression": "smile",
+    "trigger": "penalty"
+  },
+  {
+    "id": 300,
+    "text": "重新來。我還在看你的小穴。燈也還在。",
+    "expression": "excited",
+    "trigger": "penalty"
+  }
+];
+
+let usedDialogueIds = [];
+let recentDialogueIds = [];
+let lastDialogueId = null;
+let dialogueLockUntil = 0;
+let dialoguePhaseGen = 0;
+let dialoguePhaseStart = 0;
+let dialogueScheduleTimer = null;
+let dialogueKind = null;
+let pendingBpmChange = null;
+let lastTrackedBpm = null;
+let dialogueImagesReady = false;
+
+function resetDialogueState() {
+  usedDialogueIds = [];
+  recentDialogueIds = [];
+  lastDialogueId = null;
+  dialogueLockUntil = 0;
+  pendingBpmChange = null;
+  lastTrackedBpm = null;
+  stopDialogueSchedule();
+}
+function stopDialogueSchedule() {
+  dialoguePhaseGen++;
+  dialogueKind = null;
+  if (dialogueScheduleTimer) {
+    clearTimeout(dialogueScheduleTimer);
+    dialogueScheduleTimer = null;
+  }
+}
+function noteBpmForDialogue(value) {
+  if (lastTrackedBpm != null && value !== lastTrackedBpm) {
+    pendingBpmChange = value > lastTrackedBpm ? 'up' : 'down';
+  }
+  lastTrackedBpm = value;
+}
+function bpmRangeForPhase() {
+  if (currentPhase === 'final') return [60, 240];
+  if (currentPhase === 'highspeed') return [160, 240];
+  return (typeof BPM_RANGE !== 'undefined' && BPM_RANGE[difficulty]) || [80, 150];
+}
+function bpmBandOf(value) {
+  const range = bpmRangeForPhase();
+  const span = Math.max(1, range[1] - range[0]);
+  const t = (value - range[0]) / span;
+  if (t < 1 / 3) return 'low';
+  if (t < 2 / 3) return 'mid';
+  return 'high';
+}
+function dialoguePriority(trigger) {
+  if (['early_failure', 'penalty', 'all_lights_complete', 'trial_transition'].includes(trigger)) return 100;
+  if (['first_light', 'lights_halfway', 'one_light_remaining'].includes(trigger)) return 80;
+  if (['bpm_increase', 'bpm_decrease', 'progress_low', 'progress_mid', 'progress_high', 'low_bpm', 'mid_bpm', 'high_bpm'].includes(trigger)) return 60;
+  return 20;
+}
+function dialogueContext(event) {
+  return {
+    event: event || null,
+    band: bpmBandOf(bpm),
+    bpmChange: pendingBpmChange,
+    progress: permission
+  };
+}
+function triggerMatches(trigger, ctx) {
+  switch (trigger) {
+    case 'general': return !ctx.event;
+    case 'low_bpm': return !ctx.event && ctx.band === 'low';
+    case 'mid_bpm': return !ctx.event && ctx.band === 'mid';
+    case 'high_bpm': return !ctx.event && ctx.band === 'high';
+    case 'bpm_increase': return ctx.event === 'bpm_increase' || (!ctx.event && ctx.bpmChange === 'up');
+    case 'bpm_decrease': return ctx.event === 'bpm_decrease' || (!ctx.event && ctx.bpmChange === 'down');
+    case 'progress_low': return !ctx.event && ctx.progress < 34;
+    case 'progress_mid': return !ctx.event && ctx.progress >= 34 && ctx.progress <= 66;
+    case 'progress_high': return !ctx.event && ctx.progress > 66 && ctx.progress < 100;
+    case 'first_light': return ctx.event === 'first_light';
+    case 'lights_halfway': return ctx.event === 'lights_halfway';
+    case 'one_light_remaining': return ctx.event === 'one_light_remaining';
+    case 'all_lights_complete': return ctx.event === 'all_lights_complete';
+    case 'early_failure': return ctx.event === 'early_failure';
+    case 'penalty': return ctx.event === 'penalty';
+    case 'trial_transition': return ctx.event === 'trial_transition';
+    default: return false;
+  }
+}
+function stageBias(entry) {
+  if (!dialogueKind || !dialoguePhaseStart) return 0;
+  const elapsed = (performance.now() - dialoguePhaseStart) / 1000;
+  const intense = ['excited', 'angry', 'smile'].includes(entry.expression);
+  const calm = ['lounge', 'bored', 'desk', 'default'].includes(entry.expression);
+  if (dialogueKind === 'fallen') {
+    if (elapsed < 60) return calm ? 2 : 0;
+    if (elapsed < 120) return entry.expression === 'smile' || entry.expression === 'excited' ? 1 : 0;
+    return intense ? 2 : 0;
+  }
+  if (dialogueKind === 'final') {
+    if (elapsed < 60) return calm ? 2 : 0;
+    if (elapsed < 120) return entry.expression === 'smile' ? 1 : 0;
+    if (elapsed < 180) return entry.expression === 'excited' ? 2 : 0;
+    if (elapsed < 240) return intense ? 1 : 0;
+    return entry.expression === 'excited' || entry.expression === 'angry' ? 2 : 0;
+  }
+  return 0;
+}
+function rememberDialogue(entry) {
+  usedDialogueIds.push(entry.id);
+  recentDialogueIds.push(entry.id);
+  if (recentDialogueIds.length > 10) recentDialogueIds.shift();
+  lastDialogueId = entry.id;
+  if (entry.trigger === 'bpm_increase' || entry.trigger === 'bpm_decrease') pendingBpmChange = null;
+}
+function pickDialogue(event, consumeChange) {
+  const ctx = dialogueContext(event);
+  let pool = DIALOGUE_DB.filter(d => triggerMatches(d.trigger, ctx));
+  if (!pool.length && event) pool = DIALOGUE_DB.filter(d => d.trigger === 'general');
+  if (!pool.length) return null;
+  const unused = pool.filter(d => !usedDialogueIds.includes(d.id));
+  let candidates = unused.length ? unused : pool;
+  candidates = candidates.filter(d => !recentDialogueIds.includes(d.id) && d.id !== lastDialogueId);
+  if (!candidates.length) candidates = unused.length ? unused.filter(d => d.id !== lastDialogueId) : pool.filter(d => d.id !== lastDialogueId);
+  if (!candidates.length) candidates = pool;
+  const maxPri = Math.max(...candidates.map(d => dialoguePriority(d.trigger)));
+  let top = candidates.filter(d => dialoguePriority(d.trigger) === maxPri);
+  const biased = top.filter(d => stageBias(d) > 0);
+  if (biased.length) top = biased;
+  const pick = top[Math.floor(Math.random() * top.length)];
+  rememberDialogue(pick);
+  if (consumeChange) pendingBpmChange = null;
+  return pick;
+}
+function showDialogue(entry, lockMs, gen) {
+  if (gen != null && gen !== dialoguePhaseGen) return false;
+  if (!entry) return false;
+  const el = document.getElementById('dialogue');
+  if (el) el.textContent = '「' + entry.text + '」';
+  if (entry.expression) updatePortrait(entry.expression);
+  if (lockMs) dialogueLockUntil = performance.now() + lockMs;
+  return true;
+}
+function showEventDialogue(event, lockMs) {
+  const entry = pickDialogue(event, true);
+  if (!entry) return false;
+  return showDialogue(entry, lockMs || 4000, dialoguePhaseGen);
+}
+function nextDialogueDelay(elapsed) {
+  if (dialogueKind === 'normal') {
+    const slots = [0, 10, 20, 30, 40];
+    const next = slots.find(s => s > elapsed + 0.05);
+    return next == null ? null : (next - elapsed) * 1000;
+  }
+  if (dialogueKind === 'fallen') {
+    const next = Math.ceil((elapsed + 0.05) / 10) * 10;
+    if (next > 170) return null;
+    return (next - elapsed) * 1000;
+  }
+  if (dialogueKind === 'final') {
+    const stages = [[0, 60, 12], [60, 120, 10], [120, 180, 8], [180, 240, 7.5], [240, 300, 6]];
+    for (const [start, end, step] of stages) {
+      if (elapsed >= end) continue;
+      const base = Math.max(start, Math.floor(elapsed / step) * step);
+      let next = base + step;
+      if (next <= elapsed + 0.05) next += step;
+      if (next >= end && elapsed < end - 0.05) {
+        const boundary = stages.find(s => s[0] === end);
+        if (!boundary) return null;
+        next = end;
+      }
+      if (next >= 300) return null;
+      return (next - elapsed) * 1000;
+    }
+  }
+  return null;
+}
+function dialogueTick(gen) {
+  if (gen !== dialoguePhaseGen) return;
+  const elapsed = (performance.now() - dialoguePhaseStart) / 1000;
+  if (performance.now() >= dialogueLockUntil) {
+    const prefer = pendingBpmChange === 'up' ? 'bpm_increase' : pendingBpmChange === 'down' ? 'bpm_decrease' : null;
+    const entry = pickDialogue(prefer, true);
+    showDialogue(entry, 0, gen);
+  }
+  const delay = nextDialogueDelay(elapsed);
+  if (delay == null) return;
+  dialogueScheduleTimer = setTimeout(() => dialogueTick(gen), Math.max(50, delay));
+}
+function startDialogueSchedule(kind) {
+  stopDialogueSchedule();
+  dialogueKind = kind;
+  dialoguePhaseStart = performance.now();
+  dialogueLockUntil = 0;
+  const gen = dialoguePhaseGen;
+  dialogueTick(gen);
+}
+function lightEventFor(count, total) {
+  if (count <= 0) return null;
+  if (count >= total) return 'all_lights_complete';
+  if (count === 1) return 'first_light';
+  if (total - count === 1) return 'one_light_remaining';
+  if (count === Math.ceil(total / 2)) return 'lights_halfway';
+  return null;
+}
+function preloadDialogueImages() {
+  if (dialogueImagesReady) return;
+  dialogueImagesReady = true;
+  ['modeus.jpg','modeus-smile.jpg','modeus-angry.jpg','modeus-bored.jpg','modeus-excited.jpg','modeus-laugh.jpg','modeus-lounge.jpg','modeus-desk.jpg'].forEach(name => {
+    const img = new Image();
+    img.src = './' + name;
+  });
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden || !dialogueKind) return;
+  if (dialogueScheduleTimer) {
+    clearTimeout(dialogueScheduleTimer);
+    dialogueScheduleTimer = null;
+  }
+  const gen = dialoguePhaseGen;
+  const elapsed = (performance.now() - dialoguePhaseStart) / 1000;
+  if (performance.now() >= dialogueLockUntil) {
+    const entry = pickDialogue(null, true);
+    showDialogue(entry, 0, gen);
+  }
+  const delay = nextDialogueDelay(elapsed);
+  if (delay != null) dialogueScheduleTimer = setTimeout(() => dialogueTick(gen), Math.max(50, delay));
+});
+
+const INSTRUCTIONS = [
+  { id: "cmd_001", title: "最慢速抽插", description: "跟著 BPM，每次進出都要感受腸壁", pattern: "slow", opening: true, bpm: { easy: 80, normal: 90, hard: 100 } },
+  { id: "cmd_002", title: "緩慢深抽", description: "每次都整根進出，速度保持最慢", pattern: "slow", opening: true, bpm: { easy: 80, normal: 90, hard: 100 } },
+  { id: "cmd_003", title: "逼近邊緣立刻放慢抽插", description: "感覺要射就降速，但不要停", pattern: "edge", opening: true, bpm: { easy: 80, normal: 90, hard: 100 } },
+  { id: "cmd_004", title: "超慢長抽", description: "幾乎抽出再慢慢推進，節奏跟上 BPM", pattern: "slow", opening: false, bpm: { easy: 90, normal: 105, hard: 120 } },
+  { id: "cmd_005", title: "淺插配合呼吸", description: "吸氣推進肛門，吐氣抽出，不要停", pattern: "breath", opening: false, bpm: { easy: 90, normal: 100, hard: 115 } },
+  { id: "cmd_006", title: "換個角度慢抽", description: "調整假肉棒方向，繼續慢速抽插", pattern: "angle", opening: false, bpm: { easy: 90, normal: 110, hard: 125 } },
+  { id: "cmd_007", title: "淺淺抽插", description: "只在肛門入口附近跟著節拍進出", pattern: "shallow", opening: false, bpm: { easy: 100, normal: 115, hard: 130 } },
+  { id: "cmd_008", title: "輕輕磨著抽", description: "抽插時用假肉棒貼著腸壁慢慢磨", pattern: "grind", opening: false, bpm: { easy: 100, normal: 120, hard: 135 } },
+  { id: "cmd_009", title: "一拍進一拍出", description: "進的拍子推進，出的拍子抽出", pattern: "rhythm", opening: false, bpm: { easy: 100, normal: 125, hard: 140 } },
+  { id: "cmd_010", title: "穩定慢抽", description: "固定慢節奏，每一拍推進或抽出", pattern: "steady", opening: false, bpm: { easy: 105, normal: 120, hard: 135 } },
+  { id: "cmd_011", title: "只用頭部進出", description: "假肉棒頭部在肛門口跟著節拍反覆進出", pattern: "shallow", opening: false, bpm: { easy: 110, normal: 130, hard: 145 } },
+  { id: "cmd_012", title: "只抽不頂", description: "不要插到最深，淺層跟著節拍進出", pattern: "shallow", opening: false, bpm: { easy: 115, normal: 135, hard: 150 } },
+  { id: "cmd_013", title: "慢慢加一點速度", description: "從最慢開始，每幾下稍微加快，不要停", pattern: "speed", opening: false, bpm: { easy: 150, normal: 160, hard: 180 } },
+  { id: "cmd_014", title: "中等速度穩定抽插", description: "假肉棒跟著 BPM 固定節奏進出肛門", pattern: "steady", opening: false, bpm: { easy: 120, normal: 120, hard: 140 } },
+  { id: "cmd_015", title: "交替深淺抽插", description: "三下淺插肛門，兩下深插，不要停", pattern: "depth", opening: false, bpm: { easy: 110, normal: 110, hard: 130 } },
+  { id: "cmd_016", title: "跟上 BPM 抽插", description: "每一下拍子推進或抽出一次", pattern: "rhythm", opening: false, bpm: { easy: 130, normal: 130, hard: 155 } },
+  { id: "cmd_017", title: "用假肉棒磨前列腺", description: "在深處跟著節拍反覆磨，不要完全抽出", pattern: "grind", opening: false, bpm: { easy: 115, normal: 115, hard: 140 } },
+  { id: "cmd_018", title: "抽出到只剩頭部再整根插入", description: "完整進出肛門，節奏跟上", pattern: "depth", opening: false, bpm: { easy: 100, normal: 100, hard: 125 } },
+  { id: "cmd_019", title: "換角度繼續抽插", description: "調整假肉棒壓到不同腸壁，持續進出", pattern: "angle", opening: false, bpm: { easy: 125, normal: 125, hard: 150 } },
+  { id: "cmd_020", title: "只留半根再推進", description: "抽出一半，再整根推回，跟上 BPM", pattern: "depth", opening: false, bpm: { easy: 115, normal: 115, hard: 145 } },
+  { id: "cmd_021", title: "穩定深抽", description: "每次都要整根進出，不要只在入口", pattern: "depth", opening: false, bpm: { easy: 110, normal: 110, hard: 135 } },
+  { id: "cmd_022", title: "連續抽插不停", description: "中速持續進出肛門，跟著節拍", pattern: "steady", opening: false, bpm: { easy: 140, normal: 140, hard: 165 } },
+  { id: "cmd_023", title: "兩拍進一拍出", description: "兩下推進，一下抽出，跟上 BPM", pattern: "rhythm", opening: false, bpm: { easy: 125, normal: 125, hard: 150 } },
+  { id: "cmd_024", title: "加速三下再回中速", description: "連續加快三下，再回到原本節奏", pattern: "speed", opening: false, bpm: { easy: 150, normal: 180, hard: 200 } },
+  { id: "cmd_025", title: "入口磨一下再推進", description: "在肛門口磨一下，再整根推進", pattern: "grind", opening: false, bpm: { easy: 105, normal: 105, hard: 130 } },
+  { id: "cmd_026", title: "壓著上壁抽插", description: "假肉棒往上壓，持續進出", pattern: "angle", opening: false, bpm: { easy: 135, normal: 135, hard: 160 } },
+  { id: "cmd_027", title: "快速用力抽插", description: "加快假肉棒進出肛門的速度與力道，跟上 BPM", pattern: "speed", opening: false, bpm: { easy: 145, normal: 160, hard: 180 } },
+  { id: "cmd_028", title: "深插到底並小幅度快抽", description: "頂住前列腺，假肉棒在深處跟著節拍快速磨", pattern: "grind", opening: false, bpm: { easy: 140, normal: 165, hard: 190 } },
+  { id: "cmd_029", title: "連續逼近邊緣", description: "接近極限就放慢抽插，但不要停", pattern: "edge", opening: false, bpm: { easy: 95, normal: 110, hard: 120 } },
+  { id: "cmd_030", title: "抽出再重重插入", description: "假肉棒幾乎離開後立刻整根推進，跟上節拍", pattern: "depth", opening: false, bpm: { easy: 120, normal: 140, hard: 150 } },
+  { id: "cmd_031", title: "最快速度抽插", description: "用最快節奏讓假肉棒持續進出肛門", pattern: "speed", opening: false, bpm: { easy: 150, normal: 180, hard: 220 } },
+  { id: "cmd_032", title: "保持在邊緣繼續抽插", description: "已經很想射也只能繼續用假肉棒磨，不要停", pattern: "edge", opening: false, bpm: { easy: 110, normal: 145, hard: 160 } },
+  { id: "cmd_033", title: "整根抽出再整根插入", description: "每次都要完全離開再完全進去，跟上 BPM", pattern: "depth", opening: false, bpm: { easy: 115, normal: 130, hard: 140 } },
+  { id: "cmd_034", title: "不規則深抽", description: "忽快忽慢，但每一次都要深入肛門，不要停", pattern: "rhythm", opening: false, bpm: { easy: 130, normal: 155, hard: 170 } },
+  { id: "cmd_035", title: "高頻淺抽", description: "在入口附近跟著節拍快速進出", pattern: "shallow", opening: false, bpm: { easy: 145, normal: 170, hard: 200 } },
+  { id: "cmd_036", title: "深淺交替加速", description: "淺兩下深兩下，速度跟著 BPM 往上", pattern: "depth", opening: false, bpm: { easy: 135, normal: 160, hard: 185 } },
+  { id: "cmd_037", title: "每四拍加速一次", description: "四下正常，下一輪加快，不要停", pattern: "rhythm", opening: false, bpm: { easy: 140, normal: 165, hard: 195 } },
+  { id: "cmd_038", title: "壓著下壁快速抽", description: "假肉棒往下壓，快速持續進出", pattern: "angle", opening: false, bpm: { easy: 130, normal: 155, hard: 175 } },
+  { id: "cmd_039", title: "邊緣來回放慢加快", description: "快到就降速，回落再加速，持續抽插", pattern: "edge", opening: false, bpm: { easy: 100, normal: 130, hard: 140 } },
+  { id: "cmd_040", title: "只在深處高頻磨", description: "不要完全抽出，在前列腺附近快速磨", pattern: "grind", opening: false, bpm: { easy: 145, normal: 175, hard: 210 } }
+];
+
+const BPM_RANGE = { easy: [80, 150], normal: [90, 180], hard: [100, 220] };
+const MIN_BPM = { easy: 80, normal: 90, hard: 100 };
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+function resetInstructionBag() {
+  usedInstructionIds = [];
+  lastInstructionId = null;
+  instructionBag = [];
+}
+function refillBag() {
+  instructionBag = INSTRUCTIONS.map(i => i.id).filter(id => id !== lastInstructionId);
+  if (!instructionBag.length) instructionBag = INSTRUCTIONS.map(i => i.id);
+  shuffle(instructionBag);
+}
+function pickInstruction(isFirst) {
+  if (isFirst) {
+    const openings = INSTRUCTIONS.filter(i => i.opening);
+    const pick = openings[Math.floor(Math.random() * openings.length)];
+    usedInstructionIds.push(pick.id);
+    lastInstructionId = pick.id;
+    instructionBag = INSTRUCTIONS.map(i => i.id).filter(id => id !== pick.id);
+    shuffle(instructionBag);
+    return pick;
+  }
+  if (!instructionBag.length) refillBag();
+  const id = instructionBag.pop();
+  usedInstructionIds.push(id);
+  lastInstructionId = id;
+  return INSTRUCTIONS.find(i => i.id === id);
+}
+function bpmFor(cmd) {
+  const range = BPM_RANGE[difficulty] || BPM_RANGE.normal;
+  let value = (cmd.bpm && cmd.bpm[difficulty]) || MIN_BPM[difficulty];
+  return Math.max(range[0], Math.min(range[1], value));
+}
+function setEarlyVisible(show) {
+  const btn = document.getElementById('early-btn');
+  if (btn) btn.style.display = show ? 'block' : 'none';
+}
+
+const PUNISHMENT_ITEMS = [
+  { name: "剝殼水煮蛋", desc: "把一顆剝殼的水煮蛋慢慢塞進肛門" },
+  { name: "香蕉段", desc: "把一段去皮香蕉塞進肛門" }
+];
+
+let difficulty = 'normal';
+let permission = 0;
+let bpm = 90;
+let isPlaying = false;
+let soundOn = true;
+let sfxType = 'classic';
+let slapBuffer = null;
+let audioCtx = null;
+let currentPhase = 'normal';
+let commandTimer = null;
+let dialogueTimer = null;
+let beatTimer = null;
+let commandDuration = 0;
+let commandElapsed = 0;
+let highspeedTimer = null;
+let currentRound = 0;
+let maxRounds = 3;
+let isFinal = false;
+let penaltyReason = null;
+let usedInstructionIds = [];
+let lastInstructionId = null;
+let instructionBag = [];
+let roundDone = 0;
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function selectMenuDiff(el) {
+  document.querySelectorAll('.menu-diff').forEach(d => d.classList.remove('on'));
+  el.classList.add('on');
+  difficulty = el.dataset.diff;
+  const imgs = { easy: 'flirty', normal: 'desk', hard: 'danger' };
+  const lines = { easy: '「慢慢來就好，乖乖聽我的。」', normal: '「準備好了嗎？前面不准碰。」', hard: '「敢選這個？可別哭著求饒。」' };
+  setImageWithFallback(document.getElementById('menu-por'), assetEntry(imgs[difficulty]).file, assetEntry(imgs[difficulty]).fallback);
+  document.getElementById('menu-sp').textContent = lines[difficulty];
+}
+function confirmAge() {
+  document.getElementById('age-yes').disabled = true;
+  document.getElementById('age-no').disabled = true;
+  document.getElementById('age-por').src = 'https://raw.githubusercontent.com/yu10708c-bot/modeus/main/modeus-flirty.png';
+  document.getElementById('age-sp').textContent = '「很好♡ 那我們開始吧。」';
+  setTimeout(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce) {
+      document.body.style.transition = 'background 0.3s';
+      document.body.style.background = '#E7352A';
+    }
+    setTimeout(() => {
+      document.body.style.background = '#111';
+      showScreen('setup-screen');
+    }, reduce ? 0 : 300);
+  }, 800);
+}
+function denyAge() {
+  document.getElementById('age-screen').innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:center;min-height:100dvh;background:#111;color:#F5F0E8;text-align:center;padding:20px;">
+      <div>
+        <div style="font-size:20px;font-weight:900;margin-bottom:12px;">未滿 18 歲</div>
+        <div style="color:#858585;">請離開此頁面。</div>
+      </div>
+    </div>`;
+}
+function enterSetup() { showScreen('setup-screen'); }
+function selectDiff(el) {
+  document.querySelectorAll('.option[data-diff]').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  difficulty = el.dataset.diff;
+}
+function toggleSound() {
+  soundOn = !soundOn;
+  const btn = document.getElementById('sound-btn');
+  btn.textContent = soundOn ? '🔊' : '🔇';
+  btn.classList.toggle('active', soundOn);
+}
+const ASSETS = {
+  default: { file: 'modeus.png', fallback: 'modeus-smile.jpg', type: 'expression' },
+  normal: { file: 'modeus-smirk.png', fallback: 'modeus-smile.jpg', type: 'expression' },
+  smile: { file: 'modeus-smirk.png', fallback: 'modeus-smile.jpg', type: 'expression' },
+  desk: { file: 'modeus-desk.jpg', fallback: 'modeus-smile.jpg', type: 'expression' },
+  excited: { file: 'modeus-excited.jpg', fallback: 'modeus-triumph.png', type: 'expression' },
+  bored: { file: 'modeus-bored.png', fallback: 'modeus-bored.jpg', type: 'expression' },
+  angry: { file: 'modeus-angry.png', fallback: 'modeus-angry.jpg', type: 'expression' },
+  laugh: { file: 'modeus-laugh.jpg', fallback: 'modeus-triumph.png', type: 'expression' },
+  lounge: { file: 'modeus-lounge.jpg', fallback: 'modeus-smile.jpg', type: 'expression' },
+  command: { file: 'modeus-command.png', fallback: 'modeus-angry.png', type: 'expression' },
+  danger: { file: 'modeus-danger.png', fallback: 'modeus-angry.png', type: 'expression' },
+  defeated: { file: 'modeus-defeated.png', fallback: 'modeus-angry.jpg', type: 'expression' },
+  disappointed: { file: 'modeus-disappointed.png', fallback: 'modeus-bored.png', type: 'expression' },
+  dominant: { file: 'modeus-dominant.png', fallback: 'modeus-angry.png', type: 'expression' },
+  flirty: { file: 'modeus-flirty.png', fallback: 'modeus-smile.jpg', type: 'expression' },
+  frustrated: { file: 'modeus-frustrated.png', fallback: 'modeus-angry.png', type: 'expression' },
+  impatient: { file: 'modeus-impatient.png', fallback: 'modeus-bored.png', type: 'expression' },
+  impressed: { file: 'modeus-impressed.png', fallback: 'modeus-excited.jpg', type: 'expression' },
+  judgment: { file: 'modeus-judgment.png', fallback: 'modeus-angry.png', type: 'expression' },
+  praise: { file: 'modeus-praise.png', fallback: 'modeus-excited.jpg', type: 'expression' },
+  shy: { file: 'modeus-shy.png', fallback: 'modeus-smile.jpg', type: 'expression' },
+  sleepy: { file: 'modeus-sleepy.png', fallback: 'modeus-bored.png', type: 'expression' },
+  smirk: { file: 'modeus-smirk.png', fallback: 'modeus-smile.jpg', type: 'expression' },
+  surprised: { file: 'modeus-surprised.png', fallback: 'modeus-excited.jpg', type: 'expression' },
+  tease: { file: 'modeus-tease.png', fallback: 'modeus-smile.jpg', type: 'expression' },
+  triumph: { file: 'modeus-triumph.png', fallback: 'modeus-excited.jpg', type: 'expression' },
+  contract: { file: 'modeus-contract.png', fallback: 'modeus-dominant.png', type: 'cg' },
+  countdown: { file: 'modeus-countdown.png', fallback: 'modeus-danger.png', type: 'cg' },
+  final: { file: 'modeus-final.png', fallback: 'modeus-triumph.png', type: 'cg' }
+};
+const ASSET_BASES = [
+  './',
+  'https://yu10708c-bot.github.io/modeus/',
+  'https://raw.githubusercontent.com/yu10708c-bot/modeus/main/'
+];
+function assetEntry(state) {
+  return ASSETS[state] || ASSETS.smile;
+}
+function setImageWithFallback(img, file, fallback) {
+  if (!img) return;
+  const names = [];
+  if (file) names.push(file);
+  if (fallback && fallback !== file) names.push(fallback);
+  names.push('modeus-smile.jpg');
+  const sources = [];
+  names.forEach(name => ASSET_BASES.forEach(base => sources.push(base + name)));
+  let i = 0;
+  img.onerror = function () {
+    i += 1;
+    if (i < sources.length) img.src = sources[i];
+    else img.onerror = null;
+  };
+  if (img.dataset.file === file) return;
+  img.dataset.file = file;
+  i = 0;
+  img.src = sources[0];
+}
+function updatePortrait(state) {
+  const entry = assetEntry(state);
+  setImageWithFallback(document.getElementById('portrait'), entry.file, entry.fallback);
+}
+function preloadDialogueImages() {
+  if (dialogueImagesReady) return;
+  dialogueImagesReady = true;
+  ['smile','angry','bored','excited','laugh','lounge','desk','danger','judgment','contract','final','triumph'].forEach(key => {
+    const entry = assetEntry(key);
+    const img = new Image();
+    img.src = './' + entry.file;
+  });
+}
+
+function cycleSfx() {
+  sfxType = sfxType === 'classic' ? 'slap' : 'classic';
+  try { localStorage.setItem('modeus_sfx', sfxType); } catch (e) {}
+  const btn = document.getElementById('beat-btn');
+  if (btn) btn.textContent = sfxType === 'classic' ? '🔔' : '👋';
+  if (sfxType === 'slap') preloadSlap();
+}
+function preloadSlap() {
+  if (slapBuffer) return;
+  const sources = [
+    './human_hand_tap_slap_wet_skin.mp3',
+    'https://yu10708c-bot.github.io/modeus/human_hand_tap_slap_wet_skin.mp3',
+    'https://raw.githubusercontent.com/yu10708c-bot/modeus/main/human_hand_tap_slap_wet_skin.mp3'
+  ];
+  const trySource = (i) => {
+    if (i >= sources.length) { sfxType = 'classic'; try { localStorage.setItem('modeus_sfx', 'classic'); } catch (e) {} return; }
+    fetch(sources[i])
+      .then(r => { if (!r.ok) throw new Error('miss'); return r.arrayBuffer(); })
+      .then(b => {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        return audioCtx.decodeAudioData(b);
+      })
+      .then(buf => { slapBuffer = buf; })
+      .catch(() => trySource(i + 1));
+  };
+  trySource(0);
+}
+try {
+  const savedSfx = localStorage.getItem('modeus_sfx');
+  if (savedSfx === 'slap' || savedSfx === 'classic') sfxType = savedSfx;
+} catch (e) {}
+function playSlap() {
+  if (!soundOn) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    if (sfxType === 'slap' && slapBuffer) {
+      const src = audioCtx.createBufferSource();
+      src.buffer = slapBuffer;
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(1, audioCtx.currentTime);
+      src.connect(gain); gain.connect(audioCtx.destination);
+      src.start(0, 0, Math.min(0.2, slapBuffer.duration));
+    } else {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(90, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.07);
+      gain.gain.setValueAtTime(0.7, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.09);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+    }
+  } catch(e) {}
+}
+let musicOn = true;
+let musicArmed = false;
+let bgm = null;
+let musicSourceIndex = 0;
+const MUSIC_SOURCES = [
+  './MUSIC.mp3',
+  'https://yu10708c-bot.github.io/modeus/MUSIC.mp3',
+  'https://raw.githubusercontent.com/yu10708c-bot/modeus/main/MUSIC.mp3'
+];
+function getBgm() {
+  if (!bgm) {
+    bgm = new Audio();
+    bgm.loop = true;
+    bgm.volume = 0.08;
+    bgm.playbackRate = 1.0;
+    bgm.preload = 'auto';
+    bgm.setAttribute('playsinline', '');
+    bgm.addEventListener('error', () => {
+      if (musicSourceIndex >= MUSIC_SOURCES.length - 1) return;
+      musicSourceIndex++;
+      bgm.src = MUSIC_SOURCES[musicSourceIndex];
+      bgm.load();
+      if (musicOn && musicArmed) bgm.play().catch(() => {});
+    });
+    bgm.src = MUSIC_SOURCES[musicSourceIndex];
+  }
+  bgm.loop = true;
+  bgm.volume = 0.08;
+  bgm.playbackRate = 1.0;
+  return bgm;
+}
+function updateMusicBtn() {
+  const btn = document.getElementById('sfx-btn');
+  if (!btn) return;
+  btn.textContent = '🎵';
+  btn.classList.toggle('active', musicOn);
+}
+function startMusic() {
+  if (!musicOn) return;
+  const a = getBgm();
+  musicArmed = true;
+  a.volume = 0.08;
+  a.playbackRate = 1.0;
+  const play = a.play();
+  if (play && play.catch) {
+    play.catch(() => {
+      if (musicSourceIndex < MUSIC_SOURCES.length - 1) {
+        musicSourceIndex++;
+        a.src = MUSIC_SOURCES[musicSourceIndex];
+        a.load();
+        a.play().catch(() => {});
+      }
+    });
+  }
+}
+function stopMusic() {
+  musicArmed = false;
+  if (!bgm) return;
+  bgm.pause();
+  bgm.currentTime = 0;
+}
+function toggleMusic() {
+  musicOn = !musicOn;
+  updateMusicBtn();
+  if (musicOn) startMusic();
+  else if (bgm) bgm.pause();
+}
+document.addEventListener('pointerdown', () => {
+  if (musicOn && musicArmed && bgm && bgm.paused) {
+    bgm.playbackRate = 1.0;
+    bgm.play().catch(() => {});
+  }
+});
+function startMetronome() {
+  clearInterval(beatTimer);
+  const interval = 60000 / bpm;
+  beatTimer = setInterval(() => {
+    const d = document.getElementById('bpm-display');
+    d.classList.add('beat');
+    setTimeout(() => d.classList.remove('beat'), 70);
+    document.getElementById('wave-l').classList.add('pulse');
+    document.getElementById('wave-r').classList.add('pulse');
+    setTimeout(() => {
+      document.getElementById('wave-l').classList.remove('pulse');
+      document.getElementById('wave-r').classList.remove('pulse');
+    }, 150);
+    playSlap();
+  }, interval);
+}
+function updateBPM(restart = true) {
+  document.getElementById('bpm-display').textContent = Math.round(bpm);
+  noteBpmForDialogue(bpm);
+  if (isPlaying && restart) startMetronome();
+}
+function updatePermission() {
+  const p = Math.round(permission);
+  document.getElementById('perm-percent').textContent = p + '%';
+  document.getElementById('perm-fill').style.width = p + '%';
+}
+function updateLights() {
+  const container = document.getElementById('trial-lights');
+  const countEl = document.getElementById('trial-count');
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 0; i < maxRounds; i++) {
+    const light = document.createElement('div');
+    light.className = 'trial-light' + (i < currentRound ? ' on' : '');
+    container.appendChild(light);
+  }
+  if (countEl) countEl.textContent = currentRound + ' / ' + maxRounds;
+}
+function finishPunishment() {
+  currentPhase = 'normal';
+  permission = 0;
+  roundDone = 0;
+  updatePermission();
+  document.getElementById('phase-label').textContent = 'MODEUS調教';
+  document.getElementById('dialogue').textContent = '「懲罰結束。繼續。」';
+  document.getElementById('cum-btn').style.display = 'none';
+
+  document.getElementById('cum-btn').onclick = cumCommand;
+  setEarlyVisible(true);
+  document.querySelector('.play-rhythm').style.display = 'block';
+  startMetronome();
+  penaltyReason = null;
+  nextCommand(false);
+}
+function startFinalIntro() {
+  currentPhase = 'final_intro';
+  clearInterval(beatTimer);
+  clearInterval(highspeedTimer);
+  stopDialogueSchedule();
+  document.getElementById('phase-label').textContent = '終局試煉';
+  showEventDialogue('trial_transition', 4000);
+  document.getElementById('command-text').textContent = 'FINAL TRIAL UNLOCKED';
+  document.getElementById('command-sub').textContent = '最後的試煉了。五分鐘，你能贏過我嗎？';
+  updatePortrait('contract');
+  setFinalRules(true);
+  setPlayProgress(false);
+  setFinalProgress(false);
+  document.getElementById('cum-btn').textContent = '接受終局試煉';
+
+  document.getElementById('cum-btn').style.display = 'block';
+  document.getElementById('cum-btn').onclick = startFinal;
+  setEarlyVisible(false);
+  document.querySelector('.play-rhythm').style.display = 'none';
+}
+function startFinal() {
+  currentPhase = 'final'; isFinal = true;
+  document.getElementById('phase-label').textContent = '終局試煉 · 5 分鐘';
+  document.getElementById('dialogue').textContent = '「最後の試練よ。五分間、私に勝てるかしら？」';
+  dialogueLockUntil = Date.now() + 4000;
+  document.getElementById('command-text').textContent = '同時用手自慰 + 假肉棒抽插';
+  document.getElementById('command-sub').textContent = 'BPM 60→240';
+  updatePortrait('excited');
+  document.getElementById('cum-btn').style.display = 'none';
+
+  document.querySelector('.play-rhythm').style.display = 'block';
+  bpm = 60; updateBPM(true);
+  highspeedElapsed = 0;
+  startDialogueSchedule('final');
+  highspeedTimer = setInterval(() => {
+    highspeedElapsed += 0.1;
+    const progress = highspeedElapsed / 300;
+    const newBpm = Math.min(240, 60 + progress * 180);
+    if (Math.abs(newBpm - bpm) > 3) {
+      bpm = newBpm;
+      updateBPM(true);
+    } else {
+      bpm = newBpm;
+      updateBPM(false);
+    }
+    document.getElementById('timer-fill').style.width = ((1 - progress) * 100) + '%';
+    if (highspeedElapsed >= 300) { clearInterval(highspeedTimer); endGame('escaped'); }
+  }, 100);
+}
+function startGame() {
+  startMusic();
+  permission = 0; isPlaying = true; currentPhase = 'normal'; currentRound = 0; isFinal = false;
+  penaltyReason = null; roundDone = 0;
+  resetInstructionBag();
+  resetDialogueState();
+  preloadDialogueImages();
+  setSurrenderNotice(false);
+  setFallenNotice(false);
+  setFallenRules(false);
+  setFinalRules(false);
+  setPlayProgress(true);
+  setFinalProgress(false);
+  maxRounds = difficulty === 'easy' ? 3 : difficulty === 'normal' ? 6 : 9;
+  bpm = MIN_BPM[difficulty] || 90;
+  updatePermission();
+  updateBPM();
+  updatePortrait('smile');
+  updateLights();
+  const phase = document.getElementById('phase-label');
+  if (phase) phase.textContent = 'MODEUS調教';
+  const cumBtn = document.getElementById('cum-btn');
+  if (cumBtn) cumBtn.style.display = 'none';
+  setEarlyVisible(true);
+  showScreen('play-screen');
+  startMusic();
+  nextCommand(true);
+  startMetronome();
+}
+function nextCommand(isFirst) {
+  if (!isPlaying || currentPhase !== 'normal') return;
+  const cmd = pickInstruction(!!isFirst);
+  document.getElementById('command-text').textContent = cmd.title;
+  document.getElementById('command-sub').textContent = cmd.description || '';
+  bpm = isFirst ? MIN_BPM[difficulty] : bpmFor(cmd);
+  updateBPM(true);
+  commandDuration = 50;
+  commandElapsed = 0;
+  const secEl = document.getElementById('timer-seconds');
+  if (secEl) secEl.textContent = commandDuration;
+  startCommandTimer();
+  startDialogueSchedule('normal');
+}
+function startCommandTimer() {
+  clearInterval(commandTimer);
+  clearInterval(dialogueTimer);
+  const fill = document.getElementById('timer-fill');
+  const secEl = document.getElementById('timer-seconds');
+  fill.className = 'timer-fill';
+  fill.style.width = '100%';
+  let lastDialogue = 0;
+  commandTimer = setInterval(() => {
+    commandElapsed += 0.1;
+    const remain = Math.max(0, 1 - commandElapsed / commandDuration);
+    fill.style.width = (remain * 100) + '%';
+    if (secEl) secEl.textContent = Math.max(0, Math.ceil(commandDuration - commandElapsed));
+    fill.className = remain < 0.25 ? 'timer-fill danger' : remain < 0.5 ? 'timer-fill warning' : 'timer-fill';
+    if (commandElapsed >= commandDuration) successCommand(true);
+  }, 100);
+}
+function successCommand(auto = false) {
+  if (!isPlaying || currentPhase !== 'normal') return;
+  roundDone += 1;
+  permission = Math.min(100, roundDone * (100 / 6));
+  updatePermission();
+  if (roundDone >= 6 || permission >= 100) { startFallenIntro(); return; }
+  nextCommand(false);
+}
+function earlyFailure() {
+  if (!isPlaying || currentPhase !== 'normal') return;
+  clearInterval(commandTimer);
+  clearInterval(highspeedTimer);
+  penaltyReason = 'early_failure';
+  stopDialogueSchedule();
+  showEventDialogue('early_failure', 4000);
+  startPunishment();
+}
+function startHighspeed() {
+  currentPhase = 'highspeed';
+  clearInterval(commandTimer);
+  setFallenRules(false);
+  setFinalRules(false);
+  setPlayProgress(true);
+  setFinalProgress(false);
+  document.getElementById('phase-label').textContent = 'FALLEN TRIAL · 墮落試煉';
+  document.getElementById('command-text').textContent = '全力快速抽插';
+  document.getElementById('command-sub').textContent = 'BPM 正在上升，只能用後面承受';
+  updatePortrait('countdown');
+  document.getElementById('cum-btn').textContent = '達到前高';
+
+  document.getElementById('cum-btn').style.display = 'block';
+  document.getElementById('cum-btn').onclick = cumCommand;
+  setEarlyVisible(false);
+  document.querySelector('.play-rhythm').style.display = 'block';
+  bpm = 160; updateBPM(true);
+
+  highspeedElapsed = 0;
+  startDialogueSchedule('fallen');
+  highspeedTimer = setInterval(() => {
+    highspeedElapsed += 0.1;
+    const progress = highspeedElapsed / 180;
+    const newBpm = Math.min(240, 160 + progress * 80);
+    if (Math.abs(newBpm - bpm) > 5) {
+      bpm = newBpm;
+      updateBPM(true);
+    } else {
+      bpm = newBpm;
+      updateBPM(false);
+    }
+    document.getElementById('timer-fill').style.width = ((1 - progress) * 100) + '%';
+    if (highspeedElapsed >= 180) { 
+      clearInterval(highspeedTimer); 
+      stopDialogueSchedule();
+      currentRound++; 
+      updateLights();
+      const lightEvent = lightEventFor(currentRound, maxRounds);
+      if (lightEvent) showEventDialogue(lightEvent, 3000);
+      else if (currentRound >= maxRounds) showEventDialogue('all_lights_complete', 4000);
+      penaltyReason = 'fallen_trial';
+      startPunishment();
+    }
+  }, 100);
+}
+function cumCommand() {
+  if (currentPhase === 'highspeed') {
+    endGame('victory');
+  } else if (currentPhase === 'final') {
+    endGame('failure');
+  }
+}
+function setSurrenderNotice(show) {
+  const el = document.getElementById('surrender-notice');
+  if (el) el.classList.toggle('show', !!show);
+}
+function setFallenNotice(show) {
+  const el = document.getElementById('fallen-notice');
+  if (el) el.classList.toggle('show', !!show);
+}
+function setFallenRules(show) {
+  const el = document.getElementById('fallen-rules');
+  if (el) el.classList.toggle('show', !!show);
+}
+function setFinalRules(show) {
+  const el = document.getElementById('final-rules');
+  if (el) el.classList.toggle('show', !!show);
+}
+function setPlayProgress(show) {
+  const el = document.querySelector('.play-progress');
+  if (el) el.style.display = show ? '' : 'none';
+}
+function setFinalProgress(show) {
+  const el = document.getElementById('final-progress');
+  if (el) el.classList.toggle('show', !!show);
+  if (!show) {
+    const fill = document.getElementById('final-fill');
+    if (fill) fill.style.width = '100%';
+  }
+}
+function startFallenIntro() {
+  currentPhase = 'fallen_intro';
+  clearInterval(commandTimer);
+  clearInterval(highspeedTimer);
+  clearInterval(beatTimer);
+  stopDialogueSchedule();
+  document.getElementById('phase-label').textContent = 'FALLEN TRIAL · 墮落試煉';
+  document.getElementById('command-text').textContent = '準備開始墮落試煉';
+  document.getElementById('command-sub').textContent = '確認規則後開始';
+  updatePortrait('danger');
+  setFallenRules(true);
+  setFinalRules(false);
+  setPlayProgress(false);
+  setSurrenderNotice(false);
+  setFallenNotice(false);
+  setEarlyVisible(false);
+  document.querySelector('.play-rhythm').style.display = 'none';
+  document.getElementById('cum-btn').textContent = '接受墮落試煉';
+  document.getElementById('cum-btn').style.display = 'block';
+  document.getElementById('cum-btn').onclick = startHighspeed;
+}
+function startPunishment() {
+  currentPhase = 'punishment';
+  clearInterval(highspeedTimer);
+  clearInterval(beatTimer);
+  stopDialogueSchedule();
+  const item = PUNISHMENT_ITEMS[Math.floor(Math.random() * PUNISHMENT_ITEMS.length)];
+  document.getElementById('phase-label').textContent = penaltyReason === 'early_failure' ? '投降懲罰' : '懲罰階段';
+  if (penaltyReason !== 'early_failure') showEventDialogue('penalty', 4000);
+  document.getElementById('command-text').textContent = item.desc;
+  document.getElementById('command-sub').textContent = '塞進去後繼續用假肉棒抽插。';
+  updatePortrait(penaltyReason === 'early_failure' ? 'judgment' : 'disappointed');
+  setSurrenderNotice(penaltyReason === 'early_failure');
+  setFallenNotice(penaltyReason === 'fallen_trial');
+  setFinalRules(false);
+  setFinalProgress(false);
+  document.getElementById('cum-btn').textContent = '完成懲罰，繼續挑戰';
+
+  document.getElementById('cum-btn').style.display = 'block';
+  document.getElementById('cum-btn').onclick = finishPunishment;
+  setEarlyVisible(false);
+  document.querySelector('.play-rhythm').style.display = 'none';
+}
+function finishPunishment() {
+  const toFinal = penaltyReason === 'fallen_trial' && currentRound >= maxRounds;
+  currentPhase = 'normal';
+  permission = 0;
+  roundDone = 0;
+  updatePermission();
+  setSurrenderNotice(false);
+  setFallenNotice(false);
+  setFallenRules(false);
+  setFinalRules(false);
+  setPlayProgress(true);
+  setFinalProgress(false);
+  document.getElementById('phase-label').textContent = 'MODEUS調教';
+  if (penaltyReason === 'early_failure') showEventDialogue('early_failure', 2500);
+  else showEventDialogue('penalty', 2500);
+  document.getElementById('cum-btn').style.display = 'none';
+  document.getElementById('cum-btn').onclick = cumCommand;
+  penaltyReason = null;
+  if (toFinal) {
+    startFinalIntro();
+    return;
+  }
+  setEarlyVisible(true);
+  document.querySelector('.play-rhythm').style.display = 'block';
+  startMetronome();
+  nextCommand(false);
+}
+function startFinal() {
+  currentPhase = 'final'; isFinal = true;
+  setFinalRules(false);
+  setPlayProgress(false);
+  setFinalProgress(true);
+  const finalFill = document.getElementById('final-fill');
+  if (finalFill) finalFill.style.width = '100%';
+  document.getElementById('phase-label').textContent = '終局試煉 · 5 分鐘';
+  document.getElementById('command-text').textContent = '同時用手自慰 + 假肉棒抽插';
+  document.getElementById('command-sub').textContent = 'BPM 60→240，撐過就算逃脫';
+  updatePortrait('final');
+  document.getElementById('cum-btn').textContent = '沒忍住~前高了';
+  document.getElementById('cum-btn').style.display = 'block';
+  document.getElementById('cum-btn').onclick = cumCommand;
+  setEarlyVisible(false);
+
+  document.querySelector('.play-rhythm').style.display = 'block';
+  bpm = 60; updateBPM(true);
+  highspeedElapsed = 0;
+  startDialogueSchedule('final');
+  highspeedTimer = setInterval(() => {
+    highspeedElapsed += 0.1;
+    const progress = highspeedElapsed / 300;
+    const newBpm = Math.min(240, 60 + progress * 180);
+    if (Math.abs(newBpm - bpm) > 3) {
+      bpm = newBpm;
+      updateBPM(true);
+    } else {
+      bpm = newBpm;
+      updateBPM(false);
+    }
+    const remain = ((1 - progress) * 100) + '%';
+    document.getElementById('timer-fill').style.width = remain;
+    if (finalFill) finalFill.style.width = remain;
+    if (highspeedElapsed >= 300) { clearInterval(highspeedTimer); endGame('escaped'); }
+  }, 100);
+}
+function safeExit() {
+  isPlaying = false;
+  clearInterval(commandTimer);
+  clearInterval(dialogueTimer);
+  clearInterval(beatTimer);
+  clearInterval(highspeedTimer);
+  stopDialogueSchedule();
+  setSurrenderNotice(false);
+  setFallenNotice(false);
+  setFallenRules(false);
+  setFinalRules(false);
+  setPlayProgress(true);
+  setFinalProgress(false);
+  stopMusic();
+  showScreen('setup-screen');
+}
+function setEndingImage(file) {
+  const img = document.getElementById('result-portrait');
+  const box = document.getElementById('result-character');
+  if (!img || !box) return;
+  box.classList.remove('failed');
+  img.style.display = '';
+  setImageWithFallback(img, file, 'modeus-smile.jpg');
+}
+function endGame(type) {
+  isPlaying = false;
+  clearInterval(commandTimer);
+  clearInterval(dialogueTimer);
+  clearInterval(beatTimer);
+  clearInterval(highspeedTimer);
+  stopDialogueSchedule();
+  setSurrenderNotice(false);
+  setFallenNotice(false);
+  setFallenRules(false);
+  setFinalRules(false);
+  setPlayProgress(true);
+  setFinalProgress(false);
+  const ends = {
+    victory: {
+      title: 'VICTORY',
+      sub: '挑戰成功',
+      status: 'CHALLENGE COMPLETE',
+      img: 'modeus-triumph.png',
+      text: '「ふふっ……やるじゃない。今回はあなたの勝ちね。」<small>「呵呵……挺厲害的嘛。這次算你贏了。」</small>'
+    },
+    escaped: {
+      title: 'ESCAPED',
+      sub: '逃出生天',
+      status: 'FINAL TRIAL SURVIVED',
+      img: 'modeus-smirk.png',
+      text: '「……竟能撐過五分鐘。這次讓你逃掉了。」<small>「……竟然撐過五分鐘。這次算你逃掉了。」</small>'
+    },
+    failure: {
+      title: 'GAME OVER',
+      sub: '終局失敗',
+      status: 'FINAL TRIAL FAILED',
+      img: 'modeus-defeated.png',
+      text: '「ふふっ……残念だったわね。また明日、挑戦してみて。」<small>「呵呵……真可惜呢。明天再來挑戰吧。」</small>'
+    }
+  };
+  const e = ends[type] || ends.failure;
+  document.getElementById('result-title').textContent = e.title;
+  document.getElementById('result-sub').textContent = e.sub;
+  document.getElementById('result-status').textContent = e.status;
+  setEndingImage(e.img);
+  document.getElementById('result-desc').innerHTML = e.text;
+  setEarlyVisible(false);
+  showScreen('result-screen');
+}
+function restartGame() {
+  clearInterval(commandTimer);
+  clearInterval(dialogueTimer);
+  clearInterval(beatTimer);
+  clearInterval(highspeedTimer);
+  startGame();
+}
+function returnToMenu() {
+  isPlaying = false;
+  clearInterval(commandTimer);
+  clearInterval(dialogueTimer);
+  clearInterval(beatTimer);
+  clearInterval(highspeedTimer);
+  stopMusic();
+  showScreen('setup-screen');
+}
+function backToSetup() { returnToMenu(); }
+document.getElementById('start-btn')?.addEventListener('click', function(e) {
+  e.preventDefault();
+  console.log('start clicked');
+  try {
+    startGame();
+  } catch(err) {
+    console.error(err);
+    alert('錯誤：' + err.message);
+  }
+});
+(function initBeatBtn() {
+  const btn = document.getElementById('beat-btn');
+  if (btn) btn.textContent = sfxType === 'slap' ? '👋' : '🔔';
+  if (sfxType === 'slap') preloadSlap();
+})();
+function openRules() {
+  const modal = document.getElementById('rules-modal');
+  if (!modal) return;
+  modal.classList.add('open');
+  document.body.classList.add('rules-open');
+}
+function closeRules(event) {
+  if (event && event.target && event.target.id !== 'rules-modal') return;
+  const modal = document.getElementById('rules-modal');
+  if (modal) modal.classList.remove('open');
+  document.body.classList.remove('rules-open');
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeRules();
+});
+</script>
+</body>
+</html>
