@@ -175,7 +175,17 @@ button:focus-visible, .menu-diff:focus-visible { outline: 2px solid #E7352A; out
 .safe-exit { border: 3px solid #F5F0E8; background: #111; color: #F5F0E8; font-size: 12px; padding: 8px 12px; cursor: pointer; }
 .play-speech-wrap { flex-shrink: 0; margin-bottom: 6px; }
 .speech-name { display: inline-block; background: #E7352A; color: #111; font-size: 11px; font-weight: 900; padding: 2px 8px; letter-spacing: 1px; clip-path: polygon(4px 0, 100% 0, 100% 100%, 0 100%, 0 4px); }
-.play-character { flex: 0 0 auto; height: 24dvh; min-height: 140px; max-height: 220px; }
+.play-character { width: 100%; flex: 0 0 auto !important; height: 18dvh; min-height: 110px; max-height: 160px; }
+.play-speech-wrap, .play-command, .hud-panel { border-width: 10px; border-image-width: 10px; }
+.play-info { display: flex; flex-wrap: nowrap; gap: 6px; }
+.play-info .hud-panel { flex: 1 1 0; width: auto; }
+.modeus-progress { position: relative; height: 18px !important; background: #251d26; border: 2px solid #f03740; overflow: hidden; clip-path: none !important; }
+.modeus-progress .fill { position: relative; display: block; height: 100% !important; top: auto; left: auto; width: var(--fill, 0%); max-width: 100%; background: #f03740; z-index: 2; }
+.modeus-progress .timer-fill { background: #e6a33b; }
+.bpm-display { font-size: 22px !important; }
+.wave { height: 22px; }
+.trial-slot { width: 18px; height: 18px; }
+.play-btn { min-height: 46px; }
 .play-portrait { width: 100%; height: 100%; object-fit: contain; }
 .play-rhythm { text-align: center; flex-shrink: 0; display: block; }
 .bpm-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
@@ -227,9 +237,9 @@ button:focus-visible, .menu-diff:focus-visible { outline: 2px solid #E7352A; out
 .final-progress.show { display: block; }
 .final-progress-label { text-align: center; color: #E7352A; font-weight: 900; font-size: 14px; letter-spacing: 1px; margin-bottom: 6px; }
 .prog-row, .timer-row { display: flex; justify-content: space-between; font-size: 14px; color: #858585; margin-bottom: 4px; }
-.prog-bar, .timer-bar { height: 10px; background: #222; clip-path: polygon(4px 0, 100% 0, 100% 100%, 0 100%, 0 4px); }
-.prog-fill { height: 10px; width: 0%; background: #f03740; transition: width 0.3s; }
-.timer-fill { height: 10px; background: #e6a33b; width: 100%; transition: width 0.1s linear; }
+.prog-bar, .timer-bar { height: 18px; background: transparent; clip-path: none; position: relative; }
+.prog-fill { height: 100%; width: 0%; background: #f03740; transition: width 0.3s; display: block; }
+.timer-fill { height: 100%; background: #e6a33b; width: 100%; transition: width 0.1s linear; display: block; }
 .timer-fill.warning { background: #ff9800; }
 .timer-fill.danger { background: #f03740; }
 .play-actions { display: flex; gap: 8px; flex-shrink: 0; margin-top: 4px; flex-wrap: wrap; }
@@ -3009,7 +3019,7 @@ function updatePermission() {
   const p = Math.round(permission);
   document.getElementById('perm-percent').textContent = p + '%';
   const bar = document.getElementById('perm-fill');
-  bar.style.width = p + '%';
+  bar.style.setProperty('width', p + '%', 'important');
   bar.parentElement.style.setProperty('--fill', p + '%');
   const status = document.getElementById('status-lust');
   if (status) status.textContent = p + '%';
@@ -3151,12 +3161,13 @@ function startCommandTimer() {
   const fill = document.getElementById('timer-fill');
   const secEl = document.getElementById('timer-seconds');
   fill.className = 'timer-fill fill';
-  fill.style.width = '100%';
+  fill.style.setProperty('width', '100%', 'important');
+  fill.parentElement.style.setProperty('--fill', '100%');
   let lastDialogue = 0;
   commandTimer = setInterval(() => {
     commandElapsed += 0.1;
     const remain = Math.max(0, 1 - commandElapsed / commandDuration);
-    fill.style.width = (remain * 100) + '%';
+    fill.style.setProperty('width', (remain * 100) + '%', 'important');
     fill.parentElement.style.setProperty('--fill', (remain * 100) + '%');
     if (secEl) secEl.textContent = Math.max(0, Math.ceil(commandDuration - commandElapsed));
     fill.className = remain < 0.25 ? 'timer-fill fill danger' : remain < 0.5 ? 'timer-fill fill warning' : 'timer-fill fill';
