@@ -114,18 +114,12 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
 }
-#play-screen.active {
-  display: grid !important;
-  grid-template-rows: auto minmax(280px, 1fr) auto auto auto auto auto;
-  height: 100dvh;
-  min-height: 100dvh;
-  align-content: stretch;
-}
+#play-screen.active { display: flex !important; flex-direction: column !important; height: auto; min-height: 100dvh; }
 #play-screen .play-character {
-  min-height: 280px !important;
-  height: 100% !important;
-  max-height: none !important;
-  flex: none !important;
+  height: 46dvh !important;
+  min-height: 340px !important;
+  max-height: 460px !important;
+  flex: 0 0 auto !important;
 }
 .play-character { display: block; }
 .play-speech-wrap, .play-command, .hud-panel {
