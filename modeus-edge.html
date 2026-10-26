@@ -186,7 +186,15 @@ button:focus-visible, .menu-diff:focus-visible { outline: 2px solid #E7352A; out
 .wave { height: 22px; }
 .trial-slot { width: 18px; height: 18px; }
 .play-btn { min-height: 46px; }
-.play-portrait { width: 100%; height: 100%; object-fit: contain; }
+.play-header { display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 6px; }
+.phase-tag { font-size: 14px; white-space: nowrap; flex: 0 1 auto; }
+.play-controls { display: flex; flex-wrap: nowrap; gap: 4px; align-items: center; }
+.icon-btn { width: 40px; min-width: 40px; height: 40px; padding: 0; font-size: 16px; }
+.safe-exit { font-size: 11px; padding: 8px 8px; white-space: nowrap; min-height: 40px; }
+.play-portrait { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; }
+.prog-fill { transition: width 0.35s ease; }
+.timer-fill { transition: width 0.12s linear; }
+.timer-fill.snap { transition: none; }
 .play-rhythm { text-align: center; flex-shrink: 0; display: block; }
 .bpm-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
 .bpm-display { font-family: 'Press Start 2P', monospace; font-size: 36px; color: #E7352A; }
@@ -3160,9 +3168,10 @@ function startCommandTimer() {
   clearInterval(dialogueTimer);
   const fill = document.getElementById('timer-fill');
   const secEl = document.getElementById('timer-seconds');
-  fill.className = 'timer-fill fill';
+  fill.className = 'timer-fill fill snap';
   fill.style.setProperty('width', '100%', 'important');
   fill.parentElement.style.setProperty('--fill', '100%');
+  requestAnimationFrame(() => fill.classList.remove('snap'));
   let lastDialogue = 0;
   commandTimer = setInterval(() => {
     commandElapsed += 0.1;
