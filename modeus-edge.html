@@ -104,7 +104,7 @@ body {
 
 /* ========== Play ========== */
 #play-screen { flex-direction: column; max-width: 480px; margin: 0 auto; width: 100%; min-height: 100dvh; background: #111; padding: calc(4px + env(safe-area-inset-top, 0px)) 10px calc(8px + env(safe-area-inset-bottom, 0px)); gap: 4px; overflow-x: hidden; }
-.play-character { width: 100%; flex: 0 0 auto; height: 24dvh; min-height: 140px; max-height: 220px; background: #0d0d0d; border: 3px solid #F5F0E8; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.play-character { display: block; }
 .play-speech-wrap, .play-command, .hud-panel {
   border: 14px solid transparent;
   border-image: url("./assets/ui/hud_frame.svg") 40 fill / 14px / 0 stretch;
@@ -175,7 +175,28 @@ button:focus-visible, .menu-diff:focus-visible { outline: 2px solid #E7352A; out
 .safe-exit { border: 3px solid #F5F0E8; background: #111; color: #F5F0E8; font-size: 12px; padding: 8px 12px; cursor: pointer; }
 .play-speech-wrap { flex-shrink: 0; margin-bottom: 6px; }
 .speech-name { display: inline-block; background: #E7352A; color: #111; font-size: 11px; font-weight: 900; padding: 2px 8px; letter-spacing: 1px; clip-path: polygon(4px 0, 100% 0, 100% 100%, 0 100%, 0 4px); }
-.play-character { width: 100%; flex: 0 0 auto !important; height: 18dvh; min-height: 110px; max-height: 160px; }
+.play-character {
+  position: relative;
+  width: 100%;
+  flex: 0 0 auto !important;
+  height: 18dvh;
+  min-height: 110px;
+  max-height: 160px;
+  overflow: hidden;
+  background: #0d0d0d;
+  border: 3px solid #F5F0E8;
+}
+#play-screen .play-portrait {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  object-position: center 18%;
+  display: block;
+}
 .play-speech-wrap, .play-command, .hud-panel { border-width: 10px; border-image-width: 10px; }
 .play-info { display: flex; flex-wrap: nowrap; gap: 6px; }
 .play-info .hud-panel { flex: 1 1 0; width: auto; }
@@ -2856,9 +2877,18 @@ function setImageWithFallback(img, file, fallback) {
   i = 0;
   img.src = sources[0];
 }
+const CROP = {
+  smile: 'center 18%', smirk: 'center 18%', tease: 'center 20%',
+  flirty: 'center 16%', dominant: 'center 22%', danger: 'center 18%',
+  frustrated: 'center 20%', impatient: 'center 24%', impressed: 'center 16%',
+  praise: 'center 16%', triumph: 'center 18%', judgment: 'center 20%',
+  desk: 'center 30%', lounge: 'center 28%', default: 'center 18%'
+};
 function updatePortrait(state) {
   const entry = assetEntry(state);
-  setImageWithFallback(document.getElementById('portrait'), entry.file, entry.fallback);
+  const img = document.getElementById('portrait');
+  setImageWithFallback(img, entry.file, entry.fallback);
+  if (img) img.style.objectPosition = CROP[state] || CROP.default;
 }
 function preloadDialogueImages() {
   if (dialogueImagesReady) return;
