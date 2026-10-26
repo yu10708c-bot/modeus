@@ -108,11 +108,36 @@ body {
 .phase-tag { font-size: 16px; color: #E7352A; font-weight: 900; letter-spacing: 1px; }
 .play-stage { display: block; flex-shrink: 0; }
 .play-character { width: 100%; min-height: 34dvh; max-height: 42dvh; background: #0d0d0d; border: 3px solid #F5F0E8; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.play-speech-wrap { width: 100%; margin: 6px 0 0; }
-.play-speech { font-size: clamp(15px, 4vw, 18px); line-height: 1.45; }
-.play-info { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-shrink: 0; }
-.play-info .play-rhythm { flex: 1; }
-.play-info .trial-lights-wrap { flex: 0 0 auto; margin: 0; }
+.play-speech-wrap, .play-command, .hud-panel {
+  border: 22px solid transparent;
+  border-image: url("./assets/ui/hud_frame.svg") 40 fill / 22px / 0 stretch;
+  background: #100c12;
+  box-sizing: border-box;
+}
+.play-speech-wrap { width: 100%; margin: 6px 0 0; padding: 2px 6px 6px; }
+.speech-name { display: inline-block; background: #f03740; color: #100c12; font-size: 12px; font-weight: 900; padding: 3px 10px; letter-spacing: 1px; }
+.play-speech { font-size: clamp(15px, 4vw, 18px); line-height: 1.45; color: #f4eee9; background: transparent; border: 0; padding: 6px 2px 2px; }
+.play-command { position: relative; padding: 4px 8px 8px; }
+.cmd-label { display: inline-block; background: #f03740; color: #100c12; font-weight: 900; padding: 3px 10px; }
+.play-info .hud-panel { flex: 1; min-width: 0; padding: 4px 8px; text-align: center; }
+.modeus-progress { position: relative; height: 24px; background: #251d26 url("./assets/ui/progress_track.svg") center / 100% 100% no-repeat; overflow: hidden; }
+.modeus-progress > .fill, .prog-fill, .timer-fill { position: absolute; left: 5px; top: 5px; bottom: 5px; height: auto; background: #f03740; max-width: calc(100% - 10px); }
+.timer-fill { background: #e6a33b; }
+.timer-fill.warning { background: #ff9800; }
+.timer-fill.danger { background: #f03740; }
+.prog-bar, .timer-bar { height: 24px; background: transparent; clip-path: none; }
+.trial-slot { width: 30px; height: 30px; object-fit: contain; }
+#play-screen .play-btn, #play-screen .safe-exit {
+  background: #111 url("./assets/ui/button_idle.svg") center / 100% 100% no-repeat;
+  border: 0;
+  color: #f4eee9;
+  min-height: 54px;
+}
+#play-screen .play-btn.primary { background-image: url("./assets/ui/button_primary.svg"); color: #100c12; }
+#play-screen .play-btn.is-pressed, #play-screen .play-btn:active,
+#play-screen .safe-exit.is-pressed, #play-screen .safe-exit:active {
+  background-image: url("./assets/ui/button_pressed.svg");
+}
 .play-command { position: relative; border: 3px solid #F5F0E8; padding: 10px 12px 10px 16px; background: #111; }
 .cmd-text { font-size: clamp(16px, 4.2vw, 20px); }
 .cmd-sub { font-size: clamp(13px, 3.4vw, 15px); color: #ddd; line-height: 1.45; }
@@ -205,9 +230,9 @@ button:focus-visible, .menu-diff:focus-visible { outline: 2px solid #E7352A; out
 .prog-row, .timer-row { display: flex; justify-content: space-between; font-size: 14px; color: #858585; margin-bottom: 4px; }
 .prog-bar, .timer-bar { height: 10px; background: #222; clip-path: polygon(4px 0, 100% 0, 100% 100%, 0 100%, 0 4px); }
 .prog-fill { height: 100%; width: 0%; background: #E7352A; transition: width 0.3s; }
-.timer-fill { height: 100%; width: 100%; background: #4caf50; transition: width 0.1s linear; }
+.timer-fill { background: #e6a33b; width: 100%; transition: width 0.1s linear; }
 .timer-fill.warning { background: #ff9800; }
-.timer-fill.danger { background: #E7352A; }
+.timer-fill.danger { background: #f03740; }
 .play-actions { display: flex; gap: 8px; flex-shrink: 0; margin-top: 4px; flex-wrap: wrap; }
 .play-btn { flex: 1 1 40%; min-height: 52px; border: 3px solid #F5F0E8; background: #111; color: #F5F0E8; font-size: 15px; font-weight: 700; padding: 12px; cursor: pointer; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); transition: transform 0.08s; }
 #early-btn { flex: 1 1 100%; }
@@ -473,7 +498,7 @@ body.rules-open { overflow: hidden; }
   </div>
 
   <div class="play-info">
-    <div class="play-rhythm">
+    <div class="hud-panel play-rhythm">
       <div class="bpm-row">
         <div class="wave" id="wave-l"><span></span><span></span><span></span><span></span><span></span></div>
         <div class="bpm-display beat-pulse" id="bpm-display">90</div>
@@ -481,7 +506,7 @@ body.rules-open { overflow: hidden; }
       </div>
       <div class="bpm-label">BPM</div>
     </div>
-    <div class="trial-lights-wrap">
+    <div class="hud-panel trial-lights-wrap">
       <div class="trial-title">墮落試煉 <span id="trial-count">0 / 3</span></div>
       <div class="trial-lights" id="trial-lights"></div>
     </div>
@@ -511,12 +536,12 @@ body.rules-open { overflow: hidden; }
       <span>淫蕩度</span>
       <span id="perm-percent">0%</span>
     </div>
-    <div class="prog-bar"><div class="prog-fill" id="perm-fill"></div></div>
+    <div class="prog-bar modeus-progress"><div class="prog-fill fill" id="perm-fill"></div></div>
     <div class="timer-row">
       <span>本條倒計時</span>
       <span id="timer-seconds">50</span>
     </div>
-    <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+    <div class="timer-bar modeus-progress"><div class="timer-fill fill" id="timer-fill"></div></div>
   </div>
   <div class="final-progress" id="final-progress">
     <div class="final-progress-label">終局試煉</div>
@@ -2994,8 +3019,10 @@ function updateLights() {
   if (!container) return;
   container.innerHTML = '';
   for (let i = 0; i < maxRounds; i++) {
-    const light = document.createElement('div');
-    light.className = 'trial-light' + (i < currentRound ? ' on' : '');
+    const light = document.createElement('img');
+    light.className = 'trial-slot';
+    light.src = i < currentRound ? './assets/ui/trial_slot_complete.svg' : './assets/ui/trial_slot_empty.svg';
+    light.alt = i < currentRound ? '完成' : '未完成';
     container.appendChild(light);
   }
   const text = currentRound + ' / ' + maxRounds;
@@ -3122,7 +3149,7 @@ function startCommandTimer() {
   clearInterval(dialogueTimer);
   const fill = document.getElementById('timer-fill');
   const secEl = document.getElementById('timer-seconds');
-  fill.className = 'timer-fill';
+  fill.className = 'timer-fill fill';
   fill.style.width = '100%';
   let lastDialogue = 0;
   commandTimer = setInterval(() => {
@@ -3130,7 +3157,7 @@ function startCommandTimer() {
     const remain = Math.max(0, 1 - commandElapsed / commandDuration);
     fill.style.width = (remain * 100) + '%';
     if (secEl) secEl.textContent = Math.max(0, Math.ceil(commandDuration - commandElapsed));
-    fill.className = remain < 0.25 ? 'timer-fill danger' : remain < 0.5 ? 'timer-fill warning' : 'timer-fill';
+    fill.className = remain < 0.25 ? 'timer-fill fill danger' : remain < 0.5 ? 'timer-fill fill warning' : 'timer-fill fill';
     if (commandElapsed >= commandDuration) successCommand(true);
   }, 100);
 }
