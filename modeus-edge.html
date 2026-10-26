@@ -103,7 +103,7 @@ body {
 .disclaimer { font-size: 11px; color: #666; text-align: center; margin-top: 14px; line-height: 1.5; }
 
 /* ========== Play ========== */
-#play-screen { flex-direction: column; max-width: 480px; margin: 0 auto; width: 100%; min-height: 100dvh; background: #111; padding: calc(4px + env(safe-area-inset-top, 0px)) 10px calc(8px + env(safe-area-inset-bottom, 0px)); gap: 4px; overflow-x: hidden; }
+#play-screen { flex-direction: column; max-width: 480px; margin: 0 auto; width: 100%; height: 100dvh; min-height: 100dvh; background: #111; padding: calc(4px + env(safe-area-inset-top, 0px)) 10px calc(6px + env(safe-area-inset-bottom, 0px)); gap: 4px; overflow-x: hidden; overflow-y: auto; }
 .play-character { display: block; }
 .play-speech-wrap, .play-command, .hud-panel {
   border: 14px solid transparent;
@@ -178,10 +178,10 @@ button:focus-visible, .menu-diff:focus-visible { outline: 2px solid #E7352A; out
 .play-character {
   position: relative;
   width: 100%;
-  flex: 0 0 auto !important;
-  height: 18dvh;
-  min-height: 110px;
-  max-height: 160px;
+  flex: 1 1 auto;
+  min-height: 240px;
+  height: auto;
+  max-height: none;
   overflow: hidden;
   background: #0d0d0d;
   border: 3px solid #F5F0E8;
@@ -194,9 +194,10 @@ button:focus-visible, .menu-diff:focus-visible { outline: 2px solid #E7352A; out
   max-width: none;
   max-height: none;
   object-fit: cover;
-  object-position: center 18%;
+  object-position: center 24%;
   display: block;
 }
+.play-header, .play-speech-wrap, .play-info, .play-command, .play-progress, .play-actions { flex-shrink: 0; }
 .play-speech-wrap, .play-command, .hud-panel { border-width: 10px; border-image-width: 10px; }
 .play-info { display: flex; flex-wrap: nowrap; gap: 6px; }
 .play-info .hud-panel { flex: 1 1 0; width: auto; }
