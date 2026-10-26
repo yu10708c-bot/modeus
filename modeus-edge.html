@@ -103,7 +103,30 @@ body {
 .disclaimer { font-size: 11px; color: #666; text-align: center; margin-top: 14px; line-height: 1.5; }
 
 /* ========== Play ========== */
-#play-screen { flex-direction: column; max-width: 480px; margin: 0 auto; width: 100%; height: 100dvh; min-height: 100dvh; background: #111; padding: calc(4px + env(safe-area-inset-top, 0px)) 10px calc(6px + env(safe-area-inset-bottom, 0px)); gap: 4px; overflow-x: hidden; overflow-y: auto; }
+#play-screen {
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+  background: #111;
+  padding: calc(4px + env(safe-area-inset-top, 0px)) 10px calc(6px + env(safe-area-inset-bottom, 0px));
+  gap: 4px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+#play-screen.active {
+  display: grid !important;
+  grid-template-rows: auto minmax(280px, 1fr) auto auto auto auto auto;
+  height: 100dvh;
+  min-height: 100dvh;
+  align-content: stretch;
+}
+#play-screen .play-character {
+  min-height: 280px !important;
+  height: 100% !important;
+  max-height: none !important;
+  flex: none !important;
+}
 .play-character { display: block; }
 .play-speech-wrap, .play-command, .hud-panel {
   border: 14px solid transparent;
